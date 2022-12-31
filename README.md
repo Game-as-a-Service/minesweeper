@@ -7,7 +7,7 @@
 
 # My Practice Stack
 描述一下你們使用的軟體方法論：
-- Todo List (算嗎？)
+- ~~Todo List~~ (算嗎？專案管理)
 
 ### Tech Stack
 描述一下你們使用的技術、框架、語言：
