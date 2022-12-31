@@ -16,7 +16,7 @@
 
 # My Practice Stack
 描述一下你們使用的軟體方法論：
-- ~~Todo List~~ GitHub Project(算嗎？專案管理)
+- ~~Todo List~~ GitHub Project (算嗎？專案管理)
 
 ### 以下可能通通沒有
 - Test-Driven Development
