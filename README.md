@@ -2,8 +2,8 @@
 
 # Intro your game
 遊戲規則可參考
-踩地雷 - Minesweeper Online https://minesweeper.online/tw/
-Google 踩地雷 - https://g.co/kgs/JKXeN2
+- 踩地雷 - Minesweeper Online https://minesweeper.online/tw/
+- Google 踩地雷 - https://g.co/kgs/JKXeN2
 
 # My Practice Stack
 描述一下你們使用的軟體方法論：
