@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"file":"app.service.js","sourceRoot":"","sources":["../src/app.service.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,2CAA4C;AAC5C,+CAA4C;AAGrC,IAAM,UAAU,GAAhB,MAAM,UAAU;IAErB;QACE,IAAI,CAAC,WAAW,GAAG,IAAI,aAAK,EAAE,CAAC;QAC/B,IAAI,CAAC,WAAW,CAAC,KAAK,EAAE,CAAC;IA6B3B,CAAC;IAED,QAAQ;QACN,OAAO,cAAc,CAAC;IACxB,CAAC;CACF,CAAA;AAtCY,UAAU;IADtB,IAAA,mBAAU,GAAE;;GACA,UAAU,CAsCtB;AAtCY,gCAAU"}
+=======
+{"version":3,"file":"app.service.js","sourceRoot":"","sources":["../src/app.service.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAA4C;AAGrC,IAAM,UAAU,GAAhB,MAAM,UAAU;IACrB,QAAQ;QACN,OAAO,cAAc,CAAC;IACxB,CAAC;CACF,CAAA;AAJY,UAAU;IADtB,IAAA,mBAAU,GAAE;GACA,UAAU,CAItB;AAJY,gCAAU"}
+>>>>>>> 96349e5 (init: 建立後端專案)

@@ -9,7 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
+<<<<<<< HEAD
 const app_gateway_1 = require("./app.gateway");
+=======
+>>>>>>> 96349e5 (init: 建立後端專案)
 const app_service_1 = require("./app.service");
 let AppModule = class AppModule {
 };
@@ -17,7 +20,11 @@ AppModule = __decorate([
     (0, common_1.Module)({
         imports: [],
         controllers: [app_controller_1.AppController],
+<<<<<<< HEAD
         providers: [app_service_1.AppService, app_gateway_1.WsGateway],
+=======
+        providers: [app_service_1.AppService],
+>>>>>>> 96349e5 (init: 建立後端專案)
     })
 ], AppModule);
 exports.AppModule = AppModule;

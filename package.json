@@ -3,6 +3,7 @@
     "commit": "cz"
   },
   "devDependencies": {
+    "@nestjs/cli": "^9.1.8",
     "commitizen": "^4.2.6",
     "cz-conventional-changelog": "3.3.0"
   },
