@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-{"version":3,"file":"main.js","sourceRoot":"","sources":["../src/main.ts"],"names":[],"mappings":";;AAAA,uCAA2C;AAC3C,6CAAyC;AACzC,qDAAgD;AAEhD,KAAK,UAAU,SAAS;IACtB,MAAM,GAAG,GAAG,MAAM,kBAAW,CAAC,MAAM,CAAC,sBAAS,CAAC,CAAC;IAChD,GAAG,CAAC,mBAAmB,CAAC,IAAI,uBAAS,CAAC,GAAG,CAAC,CAAC,CAAC;IAC5C,MAAM,GAAG,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC;AACzB,CAAC;AACD,SAAS,EAAE,CAAC"}
-=======
-{"version":3,"file":"main.js","sourceRoot":"","sources":["../src/main.ts"],"names":[],"mappings":";;AAAA,uCAA2C;AAC3C,6CAAyC;AAEzC,KAAK,UAAU,SAAS;IACtB,MAAM,GAAG,GAAG,MAAM,kBAAW,CAAC,MAAM,CAAC,sBAAS,CAAC,CAAC;IAChD,MAAM,GAAG,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC;AACzB,CAAC;AACD,SAAS,EAAE,CAAC"}
->>>>>>> 96349e5 (init: 建立後端專案)
