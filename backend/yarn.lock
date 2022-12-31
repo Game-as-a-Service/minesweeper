@@ -703,6 +703,14 @@
     multer "1.4.4-lts.1"
     tslib "2.4.1"
 
+"@nestjs/platform-ws@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/platform-ws/-/platform-ws-9.2.1.tgz#2b206e9318f80b43bead73c635664bf492fe03ee"
+  integrity sha512-jk/3xljEPbPGXU8PXiRrXcTrXU2dXXEMaUoREyCPy09VPxXVYcGfvpz4u1oYMd9+uPGrMf7DQlO0xO2WDMWp7w==
+  dependencies:
+    tslib "2.4.1"
+    ws "8.11.0"
+
 "@nestjs/schematics@^9.0.0":
   version "9.0.4"
   resolved "https://registry.yarnpkg.com/@nestjs/schematics/-/schematics-9.0.4.tgz#ab612f5a8e006ca1d617eddc8143ee00b766312b"
@@ -719,6 +727,15 @@
   resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-9.2.1.tgz#2a3f64214d58ec4ab878862395407947671e4ece"
   integrity sha512-lemXZdRSuqoZ87l0orCrS/c7gqwxeduIFOd21g9g2RUeQ4qlWPegbQDKASzbfC28klPyrgJLW4MNq7uv2JwV8w==
   dependencies:
+    tslib "2.4.1"
+
+"@nestjs/websockets@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/websockets/-/websockets-9.2.1.tgz#139e4d92e1a4ccbc37eaf954c19089d4607f6df5"
+  integrity sha512-3VYyjLybobsWp6fPtOIGmZL83nV0nzqs+A2KoMf6PxVuFQeTT+BYJqbYE3I1D2wE9d9m81U1efpIeOuL8CXRAQ==
+  dependencies:
+    iterare "1.2.1"
+    object-hash "3.0.0"
     tslib "2.4.1"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -4616,6 +4633,11 @@ write-file-atomic@^4.0.1:
   dependencies:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.7"
+
+ws@8.11.0:
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.11.0.tgz#6a0d36b8edfd9f96d8b25683db2f8d7de6e8e143"
+  integrity sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==
 
 xtend@^4.0.0:
   version "4.0.2"
