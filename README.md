@@ -6,11 +6,13 @@
 Google 踩地雷 - https://g.co/kgs/JKXeN2
 
 # My Practice Stack
-   1. 目前沒有
+描述一下你們使用的軟體方法論：
+- 目前沒有
 
 ### Tech Stack
-   後端語言：TypeScript
-   Framework：Nest.js
-   DB：PostgreSQL + Redis (如果需要)
-   前端：Vue3
-   DevOps：Github Action
+描述一下你們使用的技術、框架、語言：
+- 後端語言：TypeScript
+- Framework：Nest.js
+- DB：PostgreSQL + Redis (如果需要)
+- 前端：Vue3
+- DevOps：Github Action
