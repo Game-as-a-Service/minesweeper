@@ -1,6 +1,6 @@
 # 踩地雷 (Minesweeper)
 
-目標是快速上線，找了一個玩法相對簡單(？)的遊戲來實驗，對於上方 DDD 等軟體方法論相了解不足先跳過，可能會是一個 Anti-pattern，也許之後再調整。
+目標是快速上線，找了一個玩法相對簡單(？)的遊戲來實驗，對於 DDD 等軟體方法論相了解不足先跳過，可能會是一個 Anti-pattern，也許之後再調整。
 
 - GitHub Repo：https://github.com/Game-as-a-Service/minesweeper
 - Project：[minesweeper](https://github.com/orgs/Game-as-a-Service/projects/18/views/1)
