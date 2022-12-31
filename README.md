@@ -4,7 +4,7 @@
 
 - GitHub Repo：https://github.com/Game-as-a-Service/minesweeper
 - Project：[minesweeper](https://github.com/orgs/Game-as-a-Service/projects/18/views/1)
-- Miro：TBD (不一定會有？)
+- Miro：https://miro.com/app/board/uXjVP2dxgRs=/?share_link_id=230870598486
 
 # Intro your game
 遊戲規則可參考
