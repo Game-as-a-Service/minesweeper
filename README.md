@@ -2,6 +2,9 @@
 
 # Intro your game
 遊戲規則可參考
+- [Minesweeper (video game) - Wikipedia](https://en.wikipedia.org/wiki/Minesweeper_(video_game))
+
+直接玩遊戲
 - 踩地雷 - Minesweeper Online https://minesweeper.online/tw/
 - Google 踩地雷 - https://g.co/kgs/JKXeN2
 
