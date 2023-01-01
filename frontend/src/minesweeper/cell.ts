@@ -11,9 +11,9 @@ export class Cell {
   number: number;
   state: CellState;
 
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
+  constructor() {
+    this.x = 0;
+    this.y = 0;
     this.mine = false;
     this.number = 0;
     this.state = CellState.unopened;

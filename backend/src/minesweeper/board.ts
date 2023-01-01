@@ -22,6 +22,7 @@ export class Board {
   }
 
   open(x: number, y: number) {
+    console.log(`x:${x}, y:${y}`)
     const cell = this.cells[y][x];
     if (cell === undefined) {
       return;
@@ -56,6 +57,29 @@ export class Board {
     cell.state = CellState.flagged;
   }
 
+  // output() {
+  //   for (let y = 0; y < this.size.y; y++) {
+  //     let line = '';
+  //     for (let x = 0; x < this.size.x; x++) {
+  //       const cell = this.cells[y][x];
+  //       // let symbol = cell.mine ? 'X' : cell.number;
+  //       let symbol;
+
+  //       if (cell.state === CellState.unopened) {
+  //         symbol = '.';
+  //       } else if (cell.state === CellState.flagged) {
+  //         symbol = '!';
+  //       } else {
+  //         symbol = cell.mine ? 'X' : cell.number;
+  //       }
+
+  //       line = line + symbol;
+  //     }
+  //     console.log(`${line}`);
+  //   }
+  //   console.log('---------');
+  // }
+
   display() {
     for (let y = 0; y < this.size.y; y++) {
       let line = '';
@@ -84,7 +108,7 @@ export class Board {
     for (let y = 0; y < this.size.y; y++) {
       this.cells[y] = [];
       for (let x = 0; x < this.size.x; x++) {
-        this.cells[y][x] = new Cell();
+        this.cells[y][x] = new Cell(x, y);
       }
     }
   }
