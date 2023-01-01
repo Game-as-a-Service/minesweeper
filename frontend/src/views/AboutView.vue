@@ -1,40 +1,40 @@
 <script setup lang="ts">
 // TypeScript enabled
-import { Cell, CellState } from '@/minesweeper/cell';
-import { ref } from 'vue'
+import { Cell, CellState } from "@/minesweeper/cell";
+import { ref } from "vue";
 
-const socket = new WebSocket('ws://localhost:3000');
+const socket = new WebSocket("ws://localhost:3000");
 
-const size = ref([5,4,3])
-const cells  = ref<Cell[][]>([]);
+const size = ref([5, 4, 3]);
+const cells = ref<Cell[][]>([]);
 
-const start = function() {
+const start = function () {
   socket.send(
     JSON.stringify({
-      event: 'start',
-      data: '',
-    }),
+      event: "start",
+      data: "",
+    })
   );
-}
+};
 
-const click = function(item: Cell) {
+const click = function (item: Cell) {
   console.log(`hi, ${item.x}, ${item.y}`);
 
   let data = {
-        x: item.x,
-        y: item.y
-      };
+    x: item.x,
+    y: item.y,
+  };
 
   socket.send(
     JSON.stringify({
-      event: 'open',
+      event: "open",
       data: JSON.stringify(data),
-    }),
+    })
   );
-}
+};
 
-socket.onopen = function() {
-  console.log('Connected');
+socket.onopen = function () {
+  console.log("Connected");
   // socket.send(
   //   JSON.stringify({
   //     event: 'events',
@@ -44,18 +44,18 @@ socket.onopen = function() {
 
   socket.send(
     JSON.stringify({
-      event: 'cellsInfo',
-      data: 'test',
-    }),
+      event: "cellsInfo",
+      data: "test",
+    })
   );
 
-  socket.onmessage = function(data) {
+  socket.onmessage = function (data) {
     // console.log(data);
     // console.log(data.data);
     let json = JSON.parse(data.data);
     console.log(json);
     switch (json.event) {
-      case 'cellsInfo':
+      case "cellsInfo":
         // console.log(`cellsInfo: ${json.data}`);
         cells.value = json.data;
         break;
@@ -75,10 +75,15 @@ socket.onopen = function() {
     <!-- <div v-for="item in size">{{ item }}</div> -->
     <button @click="start()">Start</button>
     <div class="box">
-      <div class="flex" v-for="row in cells">
-        <div class="cell" @click="click(item)" v-for="item in row">
-          <div v-if="item.state === CellState.unopened"> . </div>
-          <div v-else-if="item.state === CellState.flagged"> ! </div>
+      <div class="flex" v-for="(row, index) in cells" :key="index">
+        <div
+          class="cell"
+          @click="click(item)"
+          v-for="(item, index) in row"
+          :key="index"
+        >
+          <div v-if="item.state === CellState.unopened">.</div>
+          <div v-else-if="item.state === CellState.flagged">!</div>
           <div v-else>
             <div v-if="item.mine">X</div>
             <div v-else>{{ item.number }}</div>

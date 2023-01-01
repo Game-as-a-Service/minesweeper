@@ -14,14 +14,14 @@ export class WsGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(
-    private readonly appService: AppService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   // client send: {"event":"events","data":""}
   @SubscribeMessage('events')
   onEvent(client: any, data: any): Observable<WsResponse<number>> {
-    return from([1, 2, 3]).pipe(map(item => ({ event: 'events', data: item })));
+    return from([1, 2, 3]).pipe(
+      map((item) => ({ event: 'events', data: item })),
+    );
   }
 
   // client send: {"event":"board","data":""}
@@ -35,12 +35,12 @@ export class WsGateway {
   // client send: {"event":"open","data":"{x: 0, y: 1}"}
   @SubscribeMessage('open')
   onOpen(client: any, data: string): WsResponse<object> {
-    let input = JSON.parse(data);
+    const input = JSON.parse(data);
     // console.log(`open: ${input}`);
     // console.log(`miinesweeper: ${this.appService.minesweeper.unopenedCells}`)
     this.appService.minesweeper.open(input.x, input.y);
 
-    let output = this.appService.minesweeper.cells;
+    const output = this.appService.minesweeper.cells;
     return { event: 'cellsInfo', data: output };
   }
 
@@ -49,7 +49,7 @@ export class WsGateway {
   onStart(client: any, data: string): WsResponse<object> {
     this.appService.minesweeper.start();
 
-    let output = this.appService.minesweeper.cells;
+    const output = this.appService.minesweeper.cells;
     return { event: 'cellsInfo', data: output };
   }
 }

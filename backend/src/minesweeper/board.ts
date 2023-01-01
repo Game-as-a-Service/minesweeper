@@ -22,7 +22,7 @@ export class Board {
   }
 
   open(x: number, y: number) {
-    console.log(`x:${x}, y:${y}`)
+    console.log(`x:${x}, y:${y}`);
     const cell = this.cells[y][x];
     if (cell === undefined) {
       return;
