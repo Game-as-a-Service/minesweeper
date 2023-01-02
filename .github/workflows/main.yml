@@ -1,0 +1,23 @@
+name: Main
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        subdir: [backend, frontend, nginx]
+    uses: allyusd/workflows/.github/workflows/docker-publish.yml@main
+    with:
+      subdir: ${{ matrix.subdir }}
+  deploy:
+    needs: build
+    uses: allyusd/workflows/.github/workflows/docker-compose.yml@main
+    with:
+      namespace: game-as-a-service
+      projectName: minesweeper
+    secrets:
+      host: ${{ secrets.SSH_HOST }}
+      username: ${{ secrets.SSH_USERNAME }}
+      key: ${{ secrets.SSH_KEY }}
