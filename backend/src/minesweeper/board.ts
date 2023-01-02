@@ -30,6 +30,7 @@ export class Board {
     this.generateNumber();
 
     this.gameState.isPlay = true;
+    this.gameState.winLose = WinLoseState.NONE;
 
     console.log(`start`);
   }

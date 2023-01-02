@@ -25,11 +25,9 @@ export class WsGateway {
   }
 
   // client send: {"event":"board","data":""}
-  @SubscribeMessage('cellsInfo')
-  onBoard(client: any, data: any): WsResponse<string> {
-    data = this.appService.minesweeper.cells;
-
-    return { event: 'cellsInfo', data };
+  @SubscribeMessage('gameInfo')
+  onBoard(client: any, data: any): WsResponse<object> {
+    return this.gameInfo();
   }
 
   // client send: {"event":"open","data":"{x: 0, y: 1}"}
@@ -40,8 +38,7 @@ export class WsGateway {
     // console.log(`miinesweeper: ${this.appService.minesweeper.unopenedCells}`)
     this.appService.minesweeper.open(input.x, input.y);
 
-    const output = this.appService.minesweeper.cells;
-    return { event: 'cellsInfo', data: output };
+    return this.gameInfo();
   }
 
   // client send: {"event":"flag","data":"{x: 0, y: 1}"}
@@ -50,8 +47,7 @@ export class WsGateway {
     const input = JSON.parse(data);
     this.appService.minesweeper.flag(input.x, input.y);
 
-    const output = this.appService.minesweeper.cells;
-    return { event: 'cellsInfo', data: output };
+    return this.gameInfo();
   }
 
   // client send: {"event":"open","data":""}
@@ -59,7 +55,15 @@ export class WsGateway {
   onStart(client: any, data: string): WsResponse<object> {
     this.appService.minesweeper.start();
 
-    const output = this.appService.minesweeper.cells;
-    return { event: 'cellsInfo', data: output };
+    return this.gameInfo();
+  }
+
+  gameInfo() {
+    let data = {
+      gameState: this.appService.minesweeper.gameState,
+      cells: this.appService.minesweeper.cells
+    }
+
+    return { event: 'gameInfo', data };
   }
 }
