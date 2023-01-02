@@ -4,7 +4,9 @@ import { Cell, CellState } from "@/minesweeper/cell";
 import { GameState, WinLoseState } from "@/minesweeper/gameState";
 import { ref } from "vue";
 
-const socket = new WebSocket("ws://localhost:3000");
+// for local dev
+// const socket = new WebSocket("ws://localhost:3000");
+const socket = new WebSocket("wss://minesweeper.snowbellstudio.com:3000");
 
 const size = ref([5, 4, 3]);
 const cells = ref<Cell[][]>([]);
