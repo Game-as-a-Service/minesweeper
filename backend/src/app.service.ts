@@ -3,10 +3,10 @@ import { Board } from './minesweeper/board';
 
 @Injectable()
 export class AppService {
-  minesweeper: Board;
+  // minesweeper: Board;
   constructor() {
-    this.minesweeper = new Board();
-    this.minesweeper.start();
+    // this.minesweeper = new Board();
+    // this.minesweeper.start();
     // this.minesweeper.display();
     // this.minesweeper.open(0, 1);
     // this.minesweeper.display();
