@@ -33,6 +33,24 @@ const click = function (item: Cell) {
   );
 };
 
+const flag = (item: Cell, event: MouseEvent) => {
+  // console.log(event);
+  // console.log(event.altKey);
+  event.preventDefault();
+
+  let data = {
+    x: item.x,
+    y: item.y,
+  };
+
+  socket.send(
+    JSON.stringify({
+      event: "flag",
+      data: JSON.stringify(data),
+    })
+  );
+}
+
 socket.onopen = function () {
   console.log("Connected");
   // socket.send(
@@ -79,6 +97,7 @@ socket.onopen = function () {
         <div
           class="cell"
           @click="click(item)"
+          @contextmenu="flag(item, $event)"
           v-for="(item, index) in row"
           :key="index"
         >

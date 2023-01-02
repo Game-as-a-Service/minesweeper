@@ -44,6 +44,16 @@ export class WsGateway {
     return { event: 'cellsInfo', data: output };
   }
 
+  // client send: {"event":"flag","data":"{x: 0, y: 1}"}
+  @SubscribeMessage('flag')
+  onFlag(client: any, data: string): WsResponse<object> {
+    const input = JSON.parse(data);
+    this.appService.minesweeper.flag(input.x, input.y);
+
+    const output = this.appService.minesweeper.cells;
+    return { event: 'cellsInfo', data: output };
+  }
+
   // client send: {"event":"open","data":""}
   @SubscribeMessage('start')
   onStart(client: any, data: string): WsResponse<object> {
