@@ -1,10 +1,5 @@
 import { Cell, CellState } from './cell';
-
-enum WinLoseState {
-  NONE,
-  WIN,
-  LOSE,
-}
+import { GameState, WinLoseState } from './gameState';
 
 class Size {
   x: number;
@@ -15,16 +10,14 @@ export class Board {
   cells: Cell[][];
   size: Size;
   unopenedCells: number;
-  isPlay: boolean;
-  winLose: WinLoseState;
+  gameState: GameState;
 
   constructor() {
-    this.isPlay = false;
-    this.winLose = WinLoseState.NONE;
+    this.gameState = new GameState();
   }
 
   start() {
-    if (this.isPlay) {
+    if (this.gameState.isPlay) {
       return;
     }
 
@@ -36,13 +29,13 @@ export class Board {
     this.generateMine();
     this.generateNumber();
 
-    this.isPlay = true;
+    this.gameState.isPlay = true;
 
     console.log(`start`);
   }
 
   open(x: number, y: number) {
-    if (this.isPlay === false) {
+    if (this.gameState.isPlay === false) {
       return;
     }
 
@@ -60,20 +53,20 @@ export class Board {
     this.unopenedCells--;
 
     if (cell.mine) {
-      this.isPlay = false;
-      this.winLose = WinLoseState.LOSE;
+      this.gameState.isPlay = false;
+      this.gameState.winLose = WinLoseState.LOSE;
       console.log('you lose');
     }
 
     if (this.unopenedCells === 0) {
-      this.isPlay = false;
-      this.winLose = WinLoseState.WIN;
+      this.gameState.isPlay = false;
+      this.gameState.winLose = WinLoseState.WIN;
       console.log('you win');
     }
   }
 
   flag(x: number, y: number) {
-    if (this.isPlay === false) {
+    if (this.gameState.isPlay === false) {
       return;
     }
 
