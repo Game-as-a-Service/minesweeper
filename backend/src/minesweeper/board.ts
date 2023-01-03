@@ -22,8 +22,8 @@ export class Board {
     }
 
     this.size = new Size();
-    this.size.x = 5;
-    this.size.y = 3;
+    this.size.x = 9;
+    this.size.y = 9;
 
     this.generateCells();
     this.generateMine();
@@ -51,7 +51,7 @@ export class Board {
     }
 
     cell.state = CellState.opened;
-    
+
     if (cell.mine) {
       this.gameState.isPlay = false;
       this.gameState.winLose = WinLoseState.LOSE;
@@ -64,6 +64,10 @@ export class Board {
       this.gameState.isPlay = false;
       this.gameState.winLose = WinLoseState.WIN;
       console.log('you win');
+    }
+
+    if (cell.number === 0) {
+      this.autoOpen(cell);
     }
   }
 
@@ -128,6 +132,21 @@ export class Board {
       console.log(`${line}`);
     }
     console.log('---------');
+  }
+  
+  private autoOpen(cell: Cell) {
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (
+          cell.x + dx >= 0 &&
+          cell.y + dy >= 0 &&
+          cell.x + dx < this.size.x &&
+          cell.y + dy < this.size.y
+        ) {
+          this.open(cell.x + dx, cell.y + dy);
+        }
+      }
+    }
   }
 
   private generateCells() {
