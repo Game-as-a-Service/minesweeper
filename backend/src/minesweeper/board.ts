@@ -51,14 +51,15 @@ export class Board {
     }
 
     cell.state = CellState.opened;
-    this.unopenedCells--;
-
+    
     if (cell.mine) {
       this.gameState.isPlay = false;
       this.gameState.winLose = WinLoseState.LOSE;
       console.log('you lose');
+      return;
     }
-
+    
+    this.unopenedCells--;
     if (this.unopenedCells === 0) {
       this.gameState.isPlay = false;
       this.gameState.winLose = WinLoseState.WIN;
