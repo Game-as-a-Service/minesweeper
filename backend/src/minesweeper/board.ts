@@ -160,6 +160,32 @@ export class Board {
   }
 
   private generateMine() {
+    // this.manualMine();
+    this.randomMine(10);
+  }
+
+  private randomMine(count: number) {
+    for (let i = 0; i < count;) {
+      let x = this.getRandomIntInclusive(0, this.size.x - 1);
+      let y = this.getRandomIntInclusive(0, this.size.y - 1);
+
+      if (this.cells[y][x].mine === false) {
+        this.cells[y][x].mine = true;
+        i++;
+      }
+    }
+
+    this.unopenedCells = this.size.x * this.size.y;
+    this.unopenedCells = this.unopenedCells - count;
+  }
+
+  private getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+  }
+  
+  private manualMine() {
     this.cells[0][2].mine = true;
     this.cells[0][3].mine = true;
     this.cells[1][1].mine = true;
