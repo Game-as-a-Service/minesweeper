@@ -6,12 +6,14 @@ import { ref } from "vue";
 
 const urlHost = location.host.split(':')[0];
 const port = 3000;
-let socket = new WebSocket(`wss://minesweeper.snowbellstudio.com:${port}`);
+let server = `wss://minesweeper.snowbellstudio.com:${port}`;
 
 // for local dev
-if (urlHost === "localhost" || urlHost === "http://127.0.0.1/") {
-  socket = new WebSocket(`ws://localhost:3000`);
+if (urlHost === "localhost" || urlHost === "127.0.0.1") {
+  server = `ws://localhost:${port}`;
 }
+
+const socket = new WebSocket(server);
 
 const size = ref([5, 4, 3]);
 const cells = ref<Cell[][]>([]);
