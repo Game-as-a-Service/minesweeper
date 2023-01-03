@@ -81,11 +81,15 @@ export class Board {
       return;
     }
 
-    if (cell.state !== CellState.unopened) {
+    if (cell.state === CellState.opened) {
       return;
     }
 
-    cell.state = CellState.flagged;
+    if (cell.state === CellState.unopened) {
+      cell.state = CellState.flagged;
+    } else if (cell.state === CellState.flagged) {
+      cell.state = CellState.unopened;
+    }
   }
 
   // output() {
