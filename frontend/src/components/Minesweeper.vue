@@ -4,9 +4,14 @@ import { Cell, CellState } from "@/minesweeper/cell";
 import { GameState, WinLoseState } from "@/minesweeper/gameState";
 import { ref } from "vue";
 
+const urlHost = location.host.split(':')[0];
+const port = 3000;
+let socket = new WebSocket(`wss://minesweeper.snowbellstudio.com:${port}`);
+
 // for local dev
-// const socket = new WebSocket("ws://localhost:3000");
-const socket = new WebSocket("wss://minesweeper.snowbellstudio.com:3000");
+if (urlHost === "localhost" || urlHost === "http://127.0.0.1/") {
+  socket = new WebSocket(`ws://localhost:3000`);
+}
 
 const size = ref([5, 4, 3]);
 const cells = ref<Cell[][]>([]);
