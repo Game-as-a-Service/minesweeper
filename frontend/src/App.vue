@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import HelloWorld from "./components/HelloWorld.vue";
+import Minesweeper from "./components/Minesweeper.vue";
 </script>
 
 <template>
-  <header>
+  <!-- <header>
     <img
       alt="Vue logo"
       class="logo"
@@ -23,7 +24,8 @@ import HelloWorld from "./components/HelloWorld.vue";
     </div>
   </header>
 
-  <RouterView />
+  <RouterView /> -->
+  <Minesweeper />
 </template>
 
 <style scoped>
