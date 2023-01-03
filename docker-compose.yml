@@ -2,17 +2,17 @@ version: "3.7"
 
 services:
   backend:
-    image: "ghcr.io/game-as-a-service/minesweeper/backend"
+    image: "ghcr.io/game-as-a-service/minesweeper/backend:main"
     restart: unless-stopped
     networks:
       - default
   frontend:
-    image: "ghcr.io/game-as-a-service/minesweeper/frontend"
+    image: "ghcr.io/game-as-a-service/minesweeper/frontend:main"
     restart: unless-stopped
     networks:
       - default
   nginx_minesweeper:
-    image: "ghcr.io/game-as-a-service/minesweeper/nginx"
+    image: "ghcr.io/game-as-a-service/minesweeper/nginx:main"
     restart: unless-stopped
     depends_on:
       - backend
