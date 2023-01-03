@@ -16,6 +16,7 @@ if (urlHost === "localhost" || urlHost === "127.0.0.1") {
 const socket = new WebSocket(server);
 
 const size = ref([5, 4, 3]);
+const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>()
 
@@ -86,6 +87,7 @@ socket.onopen = function () {
     switch (json.event) {
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
+        clientCount.value = json.data.clientCount;
         cells.value = json.data.cells;
         gameState.value = json.data.gameState;
         break;
@@ -104,6 +106,7 @@ socket.onopen = function () {
     <!-- <div>{{size}}</div> -->
     <!-- <div v-for="item in size">{{ item }}</div> -->
     <div class="box">
+      <div class="center">Online: {{ clientCount }}</div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
       <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
       <!-- <div>{{ gameState }}</div> -->
@@ -150,6 +153,11 @@ socket.onopen = function () {
     justify-content: center;
     height: 30px;
     width: 30px;
+  }
+  .center {
+    display: flex;
+    align-content: center;
+    justify-content: center;
   }
 }
 </style>

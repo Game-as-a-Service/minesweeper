@@ -14,17 +14,26 @@ import { Board } from './minesweeper/board';
 export class WsGateway {
   @WebSocketServer()
   server: Server;
+  clientList: any[];
 
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) {
+    this.clientList = [];
+  }
 
   handleConnection(client: any) {
     client.game = new Board();
     client.game.start();
+    this.clientList.push(client);
   }
 
   handleDisconnect(client) {
     if (client.game) {
       delete client.game;
+    }
+
+    const index = this.clientList.indexOf(client, 0);
+    if (index > -1) {
+      this.clientList.splice(index, 1);
     }
   }
 
@@ -92,6 +101,7 @@ export class WsGateway {
 
   gameInfo(game: Board) {
     let data = {
+      clientCount: this.clientList.length,
       gameState: game.gameState,
       cells: game.cells
     }
