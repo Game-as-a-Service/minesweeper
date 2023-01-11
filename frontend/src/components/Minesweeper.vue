@@ -120,11 +120,26 @@ socket.onopen = function () {
             v-for="(item, index) in row"
             :key="index"
           >
-            <div v-if="item.state === CellState.unopened">.</div>
-            <div v-else-if="item.state === CellState.flagged">!</div>
+            <div v-if="item.state === CellState.unopened">
+              <!-- . -->
+              <img src="@/assets/minesweeper/unopen.png" />
+            </div>
+            <div v-else-if="item.state === CellState.flagged">
+              <!-- ! -->
+              <img src="@/assets/minesweeper/flag.png" />
+            </div>
             <div v-else>
-              <div v-if="item.mine">X</div>
-              <div v-else>{{ item.number }}</div>
+              <!-- <div v-if="item.mine">X</div> -->
+              <img v-if="item.mine" src="@/assets/minesweeper/mine.png" />
+              <!-- <div v-else>{{ item.number }}</div> -->
+              <img v-if="item.number === 1" src="@/assets/minesweeper/1.png" />
+              <img v-if="item.number === 2" src="@/assets/minesweeper/2.png" />
+              <img v-if="item.number === 3" src="@/assets/minesweeper/3.png" />
+              <img v-if="item.number === 4" src="@/assets/minesweeper/4.png" />
+              <img v-if="item.number === 5" src="@/assets/minesweeper/5.png" />
+              <img v-if="item.number === 6" src="@/assets/minesweeper/6.png" />
+              <img v-if="item.number === 7" src="@/assets/minesweeper/7.png" />
+              <img v-if="item.number === 8" src="@/assets/minesweeper/8.png" />
             </div>
           </div>
         </div>
@@ -151,8 +166,8 @@ socket.onopen = function () {
     display: flex;
     align-content: center;
     justify-content: center;
-    height: 30px;
-    width: 30px;
+    height: 24px;
+    width: 24px;
   }
   .center {
     display: flex;
