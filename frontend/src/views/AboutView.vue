@@ -10,7 +10,7 @@ const socket = new WebSocket("wss://minesweeper.snowbellstudio.com:3000");
 
 const size = ref([5, 4, 3]);
 const cells = ref<Cell[][]>([]);
-const gameState = ref<GameState>()
+const gameState = ref<GameState>();
 
 const start = function () {
   socket.send(
@@ -53,7 +53,7 @@ const flag = (item: Cell, event: MouseEvent) => {
       data: JSON.stringify(data),
     })
   );
-}
+};
 
 socket.onopen = function () {
   console.log("Connected");

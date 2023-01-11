@@ -49,7 +49,7 @@ export class WsGateway {
   @SubscribeMessage('gameInfo')
   onBoard(client: any, data: any): WsResponse<object> {
     if (client.game === undefined) {
-      console.log(`client.game is undefined`)
+      console.log(`client.game is undefined`);
       return;
     }
 
@@ -60,7 +60,7 @@ export class WsGateway {
   @SubscribeMessage('open')
   onOpen(client: any, data: string): WsResponse<object> {
     if (client.game === undefined) {
-      console.log(`client.game is undefined`)
+      console.log(`client.game is undefined`);
       return;
     }
 
@@ -76,7 +76,7 @@ export class WsGateway {
   @SubscribeMessage('flag')
   onFlag(client: any, data: string): WsResponse<object> {
     if (client.game === undefined) {
-      console.log(`client.game is undefined`)
+      console.log(`client.game is undefined`);
       return;
     }
 
@@ -90,7 +90,7 @@ export class WsGateway {
   @SubscribeMessage('start')
   onStart(client: any, data: string): WsResponse<object> {
     if (client.game === undefined) {
-      console.log(`client.game is undefined`)
+      console.log(`client.game is undefined`);
       return;
     }
 
@@ -100,11 +100,11 @@ export class WsGateway {
   }
 
   gameInfo(game: Board) {
-    let data = {
+    const data = {
       clientCount: this.clientList.length,
       gameState: game.gameState,
-      cells: game.cells
-    }
+      cells: game.cells,
+    };
 
     return { event: 'gameInfo', data };
   }

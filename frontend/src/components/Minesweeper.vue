@@ -4,7 +4,7 @@ import { Cell, CellState } from "@/minesweeper/cell";
 import { GameState, WinLoseState } from "@/minesweeper/gameState";
 import { ref } from "vue";
 
-const urlHost = location.host.split(':')[0];
+const urlHost = location.host.split(":")[0];
 const port = 3000;
 let server = `wss://minesweeper.snowbellstudio.com:${port}`;
 
@@ -18,7 +18,7 @@ const socket = new WebSocket(server);
 const size = ref([5, 4, 3]);
 const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
-const gameState = ref<GameState>()
+const gameState = ref<GameState>();
 
 const start = function () {
   socket.send(
@@ -61,7 +61,7 @@ const flag = (item: Cell, event: MouseEvent) => {
       data: JSON.stringify(data),
     })
   );
-}
+};
 
 socket.onopen = function () {
   console.log("Connected");

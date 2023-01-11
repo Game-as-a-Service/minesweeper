@@ -58,7 +58,7 @@ export class Board {
       console.log('you lose');
       return;
     }
-    
+
     this.unopenedCells--;
     if (this.unopenedCells === 0) {
       this.gameState.isPlay = false;
@@ -137,7 +137,7 @@ export class Board {
     }
     console.log('---------');
   }
-  
+
   private autoOpen(cell: Cell) {
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
@@ -169,9 +169,9 @@ export class Board {
   }
 
   private randomMine(count: number) {
-    for (let i = 0; i < count;) {
-      let x = this.getRandomIntInclusive(0, this.size.x - 1);
-      let y = this.getRandomIntInclusive(0, this.size.y - 1);
+    for (let i = 0; i < count; ) {
+      const x = this.getRandomIntInclusive(0, this.size.x - 1);
+      const y = this.getRandomIntInclusive(0, this.size.y - 1);
 
       if (this.cells[y][x].mine === false) {
         this.cells[y][x].mine = true;
@@ -188,7 +188,7 @@ export class Board {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
   }
-  
+
   private manualMine() {
     this.cells[0][2].mine = true;
     this.cells[0][3].mine = true;

@@ -18,7 +18,7 @@ export class AppService {
     // this.minesweeper.display();
     // this.minesweeper.open(1, 0);
     // this.minesweeper.display();
-
+    //
     // this.minesweeper.open(0, 0);
     // this.minesweeper.display();
     // this.minesweeper.open(4, 0);
