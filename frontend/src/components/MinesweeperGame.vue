@@ -76,12 +76,6 @@ const flag = (item: Cell, event: MouseEvent) => {
 
 socket.onopen = function () {
   console.log("Connected");
-  // socket.send(
-  //   JSON.stringify({
-  //     event: 'events',
-  //     data: 'test',
-  //   }),
-  // );
 
   socket.send(
     JSON.stringify({

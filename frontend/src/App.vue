@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
-import Minesweeper from "./components/Minesweeper.vue";
+// import { RouterLink, RouterView } from "vue-router";
+// import HelloWorld from "./components/HelloWorld.vue";
+import Minesweeper from "./components/MinesweeperGame.vue";
 </script>
 
 <template>

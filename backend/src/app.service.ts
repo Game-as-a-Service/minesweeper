@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Board } from './minesweeper/board';
+// import { Board } from './minesweeper/board';
 
 @Injectable()
 export class AppService {
