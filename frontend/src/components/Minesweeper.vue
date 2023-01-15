@@ -149,30 +149,28 @@ socket.onopen = function () {
 </template>
 
 <style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-  .box {
-    display: flex;
-    flex-direction: column;
-  }
-  .flex {
-    display: flex;
-  }
-  .cell {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    height: 24px;
-    width: 24px;
-  }
-  .center {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-  }
+.about {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+.box {
+  display: flex;
+  flex-direction: column;
+}
+.flex {
+  display: flex;
+}
+.cell {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: 24px;
+  width: 24px;
+}
+.center {
+  display: flex;
+  align-content: center;
+  justify-content: center;
 }
 </style>
