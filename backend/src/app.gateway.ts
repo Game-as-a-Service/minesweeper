@@ -86,7 +86,7 @@ export class WsGateway {
     return this.gameInfo(client.game);
   }
 
-  // client send: {"event":"open","data":""}
+  // client send: {"event":"open","data":"{level: 0}"}
   @SubscribeMessage('start')
   onStart(client: any, data: string): WsResponse<object> {
     if (client.game === undefined) {
@@ -94,7 +94,9 @@ export class WsGateway {
       return;
     }
 
-    client.game.start();
+    const input = JSON.parse(data);
+    // console.log(`${input.level}`);
+    client.game.start(input.level);
 
     return this.gameInfo(client.game);
   }

@@ -2,6 +2,7 @@
 // TypeScript enabled
 import { Cell, CellState } from "@/minesweeper/cell";
 import { GameState, WinLoseState } from "@/minesweeper/gameState";
+import { Level } from "@/minesweeper/level";
 import { ref } from "vue";
 
 const urlHost = location.host.split(":")[0];
@@ -15,16 +16,26 @@ if (urlHost === "localhost" || urlHost === "127.0.0.1") {
 
 const socket = new WebSocket(server);
 
-const size = ref([5, 4, 3]);
+const level = ref(Level.BEGINNER);
+// const size = ref([5, 4, 3]);
 const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>();
 
+const changeLevel = function (newLevel: Level) {
+  level.value = newLevel;
+  start();
+};
+
 const start = function () {
+  let data = {
+    level: level.value,
+  };
+
   socket.send(
     JSON.stringify({
       event: "start",
-      data: "",
+      data: JSON.stringify(data),
     })
   );
 };
@@ -94,7 +105,7 @@ socket.onopen = function () {
       default:
         console.log(`unknow event: ${json.event}`);
     }
-    size.value = [6, 6, 6];
+    // size.value = [6, 6, 6];
   };
 };
 </script>
@@ -107,6 +118,11 @@ socket.onopen = function () {
     <!-- <div v-for="item in size">{{ item }}</div> -->
     <div class="box">
       <div class="center">Online: {{ clientCount }}</div>
+      <div>
+        <button @click="changeLevel(Level.BEGINNER)">Beginner</button>
+        <button @click="changeLevel(Level.INTERMEDIATE)">Intermediate</button>
+        <button @click="changeLevel(Level.EXPERT)">Expert</button>
+      </div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
       <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
       <!-- <div>{{ gameState }}</div> -->
