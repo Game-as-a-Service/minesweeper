@@ -5,8 +5,8 @@
 
 - Live: https://minesweeper.snowbellstudio.com/
 - GitHub Repo：https://github.com/Game-as-a-Service/minesweeper
-- Project：[minesweeper](https://github.com/orgs/Game-as-a-Service/projects/18/views/1)
 - Miro：https://miro.com/app/board/uXjVP2dxgRs=/?share_link_id=230870598486
+- issues：https://github.com/Game-as-a-Service/minesweeper/issues
 
 # Intro your game
 遊戲規則可參考
@@ -18,7 +18,7 @@
 
 # My Practice Stack
 描述一下你們使用的軟體方法論：
-- ~~Todo List~~ GitHub Project (算嗎？專案管理)
+- ~~Todo List~~ GitHub Issues (算嗎？專案管理)
 
 ### 以下可能通通沒有
 - Test-Driven Development
