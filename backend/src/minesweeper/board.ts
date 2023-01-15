@@ -30,8 +30,6 @@ LevelConfigMap.set(Level.EXPERT, new LevelConfig(new Size(30, 16), 99));
 export class Board {
   cells: Cell[][];
   levelConfig: LevelConfig;
-  // size: Size;
-  // mineCount: number;
   unopenedCells: number;
   gameState: GameState;
 
@@ -40,17 +38,7 @@ export class Board {
   }
 
   start(level: Level = Level.BEGINNER) {
-    // if (this.gameState.isPlay) {
-    //   return;
-    // }
-
     this.levelConfig = LevelConfigMap.get(level);
-
-    // this.size = new Size(9, 9);
-    // this.size = levelConfig.size;
-    // this.mineCount = levelConfig.mineCount;
-
-    console.log(level);
 
     this.generateCells();
     this.generateMine();
@@ -118,29 +106,6 @@ export class Board {
       cell.state = CellState.unopened;
     }
   }
-
-  // output() {
-  //   for (let y = 0; y < this.size.y; y++) {
-  //     let line = '';
-  //     for (let x = 0; x < this.size.x; x++) {
-  //       const cell = this.cells[y][x];
-  //       // let symbol = cell.mine ? 'X' : cell.number;
-  //       let symbol;
-
-  //       if (cell.state === CellState.unopened) {
-  //         symbol = '.';
-  //       } else if (cell.state === CellState.flagged) {
-  //         symbol = '!';
-  //       } else {
-  //         symbol = cell.mine ? 'X' : cell.number;
-  //       }
-
-  //       line = line + symbol;
-  //     }
-  //     console.log(`${line}`);
-  //   }
-  //   console.log('---------');
-  // }
 
   display() {
     for (let y = 0; y < this.levelConfig.size.y; y++) {

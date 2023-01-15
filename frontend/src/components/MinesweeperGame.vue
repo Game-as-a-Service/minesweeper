@@ -17,7 +17,6 @@ if (urlHost === "localhost" || urlHost === "127.0.0.1") {
 const socket = new WebSocket(server);
 
 const level = ref(Level.BEGINNER);
-// const size = ref([5, 4, 3]);
 const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>();
@@ -99,17 +98,12 @@ socket.onopen = function () {
       default:
         console.log(`unknow event: ${json.event}`);
     }
-    // size.value = [6, 6, 6];
   };
 };
 </script>
 
 <template>
   <div class="about">
-    <!-- <h1>This is an about page</h1> -->
-    <!-- <div></div> -->
-    <!-- <div>{{size}}</div> -->
-    <!-- <div v-for="item in size">{{ item }}</div> -->
     <div class="box">
       <div class="center">Online: {{ clientCount }}</div>
       <div>
@@ -119,7 +113,6 @@ socket.onopen = function () {
       </div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
       <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
-      <!-- <div>{{ gameState }}</div> -->
       <button @click="start()">Start</button>
       <div class="box">
         <div class="flex" v-for="(row, index) in cells" :key="index">
@@ -131,17 +124,13 @@ socket.onopen = function () {
             :key="index"
           >
             <div v-if="item.state === CellState.unopened">
-              <!-- . -->
               <img src="@/assets/minesweeper/unopen.png" />
             </div>
             <div v-else-if="item.state === CellState.flagged">
-              <!-- ! -->
               <img src="@/assets/minesweeper/flag.png" />
             </div>
             <div v-else>
-              <!-- <div v-if="item.mine">X</div> -->
               <img v-if="item.mine" src="@/assets/minesweeper/mine.png" />
-              <!-- <div v-else>{{ item.number }}</div> -->
               <img v-if="item.number === 1" src="@/assets/minesweeper/1.png" />
               <img v-if="item.number === 2" src="@/assets/minesweeper/2.png" />
               <img v-if="item.number === 3" src="@/assets/minesweeper/3.png" />
