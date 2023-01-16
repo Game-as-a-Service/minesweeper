@@ -106,13 +106,14 @@ socket.onopen = function () {
   <div class="about">
     <div class="box">
       <div class="center">Online: {{ clientCount }}</div>
+      <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
+      <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
       <div>
         <button @click="changeLevel(Level.BEGINNER)">Beginner</button>
         <button @click="changeLevel(Level.INTERMEDIATE)">Intermediate</button>
         <button @click="changeLevel(Level.EXPERT)">Expert</button>
       </div>
-      <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
-      <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
+      <div>Mines: {{ gameState?.displayMineCount }}</div>
       <button @click="start()">Start</button>
       <div class="box">
         <div class="flex" v-for="(row, index) in cells" :key="index">

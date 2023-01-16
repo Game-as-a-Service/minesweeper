@@ -32,6 +32,7 @@ export class Board {
   levelConfig: LevelConfig;
   unopenedCells: number;
   gameState: GameState;
+  flagCount: number;
 
   constructor() {
     this.gameState = new GameState();
@@ -46,6 +47,8 @@ export class Board {
 
     this.gameState.isPlay = true;
     this.gameState.winLose = WinLoseState.NONE;
+    this.gameState.displayMineCount = this.levelConfig.mineCount;
+    this.flagCount = 0;
 
     console.log(`start`);
   }
@@ -102,9 +105,14 @@ export class Board {
 
     if (cell.state === CellState.unopened) {
       cell.state = CellState.flagged;
+      this.flagCount++;
     } else if (cell.state === CellState.flagged) {
       cell.state = CellState.unopened;
+      this.flagCount--;
     }
+
+    this.gameState.displayMineCount =
+      this.levelConfig.mineCount - this.flagCount;
   }
 
   display() {
