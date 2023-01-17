@@ -115,6 +115,37 @@ export class Board {
       this.levelConfig.mineCount - this.flagCount;
   }
 
+  chording(x: number, y: number) {
+    if (this.gameState.isPlay === false) {
+      return;
+    }
+
+    const cell = this.cells[y][x];
+    if (cell.state === CellState.unopened) {
+      return;
+    }
+
+    let flagCount = 0;
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (
+          cell.x + dx >= 0 &&
+          cell.y + dy >= 0 &&
+          cell.x + dx < this.levelConfig.size.x &&
+          cell.y + dy < this.levelConfig.size.y
+        ) {
+          if (this.cells[y + dy][x + dx].state === CellState.flagged) {
+            flagCount++;
+          }
+        }
+      }
+    }
+
+    if (flagCount === cell.number) {
+      this.autoOpen(cell);
+    }
+  }
+
   display() {
     for (let y = 0; y < this.levelConfig.size.y; y++) {
       let line = '';

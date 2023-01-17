@@ -77,6 +77,20 @@ export class WsGateway {
     return this.gameInfo(client.game);
   }
 
+  // client send: {"event":"chording","data":"{x: 0, y: 1}"}
+  @SubscribeMessage('chording')
+  onChording(client: any, data: string): WsResponse<object> {
+    if (client.game === undefined) {
+      console.log(`client.game is undefined`);
+      return;
+    }
+
+    const input = JSON.parse(data);
+    client.game.chording(input.x, input.y);
+
+    return this.gameInfo(client.game);
+  }
+
   // client send: {"event":"open","data":"{level: 0}"}
   @SubscribeMessage('start')
   onStart(client: any, data: string): WsResponse<object> {

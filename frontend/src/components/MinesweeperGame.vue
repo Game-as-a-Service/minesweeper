@@ -40,24 +40,37 @@ const start = function () {
 };
 
 const click = function (item: Cell) {
-  console.log(`hi, ${item.x}, ${item.y}`);
+  // console.log(`hi, ${item.x}, ${item.y}`);
 
   let data = {
     x: item.x,
     y: item.y,
   };
 
-  socket.send(
-    JSON.stringify({
-      event: "open",
-      data: JSON.stringify(data),
-    })
-  );
+  // console.log(`${item.state}`);
+
+  if (item.state === CellState.unopened) {
+    socket.send(
+      JSON.stringify({
+        event: "open",
+        data: JSON.stringify(data),
+      })
+    );
+  } else if (item.state === CellState.opened) {
+    socket.send(
+      JSON.stringify({
+        event: "chording",
+        data: JSON.stringify(data),
+      })
+    );
+  }
 };
 
 const flag = (item: Cell, event: MouseEvent) => {
   // console.log(event);
   // console.log(event.altKey);
+  // console.log(event.buttons);
+
   event.preventDefault();
 
   let data = {
