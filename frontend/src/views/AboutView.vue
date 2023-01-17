@@ -110,8 +110,8 @@ socket.onopen = function () {
             v-for="(item, index) in row"
             :key="index"
           >
-            <div v-if="item.state === CellState.unopened">.</div>
-            <div v-else-if="item.state === CellState.flagged">!</div>
+            <div v-if="item.state === CellState.UNOPENED">.</div>
+            <div v-else-if="item.state === CellState.FLAGGED">!</div>
             <div v-else>
               <div v-if="item.mine">X</div>
               <div v-else>{{ item.number }}</div>

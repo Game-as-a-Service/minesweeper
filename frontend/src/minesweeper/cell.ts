@@ -1,7 +1,7 @@
 export enum CellState {
-  unopened,
-  opened,
-  flagged,
+  UNOPENED,
+  OPENED,
+  FLAGGED,
 }
 
 export class Cell {
@@ -16,6 +16,6 @@ export class Cell {
     this.y = 0;
     this.mine = false;
     this.number = 0;
-    this.state = CellState.unopened;
+    this.state = CellState.UNOPENED;
   }
 }

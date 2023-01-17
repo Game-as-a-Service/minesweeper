@@ -49,14 +49,14 @@ const click = function (item: Cell) {
 
   // console.log(`${item.state}`);
 
-  if (item.state === CellState.unopened) {
+  if (item.state === CellState.UNOPENED) {
     socket.send(
       JSON.stringify({
         event: "open",
         data: JSON.stringify(data),
       })
     );
-  } else if (item.state === CellState.opened) {
+  } else if (item.state === CellState.OPENED) {
     socket.send(
       JSON.stringify({
         event: "chording",
@@ -137,10 +137,10 @@ socket.onopen = function () {
             v-for="(item, index) in row"
             :key="index"
           >
-            <div v-if="item.state === CellState.unopened">
+            <div v-if="item.state === CellState.UNOPENED">
               <img src="@/assets/minesweeper/unopen.png" />
             </div>
-            <div v-else-if="item.state === CellState.flagged">
+            <div v-else-if="item.state === CellState.FLAGGED">
               <img src="@/assets/minesweeper/flag.png" />
             </div>
             <div v-else>

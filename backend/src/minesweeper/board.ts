@@ -64,11 +64,11 @@ export class Board {
       return;
     }
 
-    if (cell.state !== CellState.unopened) {
+    if (cell.state !== CellState.UNOPENED) {
       return;
     }
 
-    cell.state = CellState.opened;
+    cell.state = CellState.OPENED;
 
     if (cell.mine) {
       this.gameState.isPlay = false;
@@ -99,15 +99,15 @@ export class Board {
       return;
     }
 
-    if (cell.state === CellState.opened) {
+    if (cell.state === CellState.OPENED) {
       return;
     }
 
-    if (cell.state === CellState.unopened) {
-      cell.state = CellState.flagged;
+    if (cell.state === CellState.UNOPENED) {
+      cell.state = CellState.FLAGGED;
       this.flagCount++;
-    } else if (cell.state === CellState.flagged) {
-      cell.state = CellState.unopened;
+    } else if (cell.state === CellState.FLAGGED) {
+      cell.state = CellState.UNOPENED;
       this.flagCount--;
     }
 
@@ -121,7 +121,7 @@ export class Board {
     }
 
     const cell = this.cells[y][x];
-    if (cell.state === CellState.unopened) {
+    if (cell.state === CellState.UNOPENED) {
       return;
     }
 
@@ -134,7 +134,7 @@ export class Board {
           cell.x + dx < this.levelConfig.size.x &&
           cell.y + dy < this.levelConfig.size.y
         ) {
-          if (this.cells[y + dy][x + dx].state === CellState.flagged) {
+          if (this.cells[y + dy][x + dx].state === CellState.FLAGGED) {
             flagCount++;
           }
         }
@@ -154,9 +154,9 @@ export class Board {
         // let symbol = cell.mine ? 'X' : cell.number;
         let symbol;
 
-        if (cell.state === CellState.unopened) {
+        if (cell.state === CellState.UNOPENED) {
           symbol = '.';
-        } else if (cell.state === CellState.flagged) {
+        } else if (cell.state === CellState.FLAGGED) {
           symbol = '!';
         } else {
           symbol = cell.mine ? 'X' : cell.number;
