@@ -98,23 +98,23 @@ const connect = () => {
         data: "test",
       })
     );
+  };
 
-    socket.onmessage = function (data) {
-      // console.log(data);
-      // console.log(data.data);
-      let json = JSON.parse(data.data);
-      console.log(json);
-      switch (json.event) {
-        case "gameInfo":
-          // console.log(`cellsInfo: ${json.data}`);
-          clientCount.value = json.data.clientCount;
-          cells.value = json.data.cells;
-          gameState.value = json.data.gameState;
-          break;
-        default:
-          console.log(`unknow event: ${json.event}`);
-      }
-    };
+  socket.onmessage = function (data) {
+    // console.log(data);
+    // console.log(data.data);
+    let json = JSON.parse(data.data);
+    console.log(json);
+    switch (json.event) {
+      case "gameInfo":
+        // console.log(`cellsInfo: ${json.data}`);
+        clientCount.value = json.data.clientCount;
+        cells.value = json.data.cells;
+        gameState.value = json.data.gameState;
+        break;
+      default:
+        console.log(`unknow event: ${json.event}`);
+    }
   };
 
   socket.onclose = function () {
