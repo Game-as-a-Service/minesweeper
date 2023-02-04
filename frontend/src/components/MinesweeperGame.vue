@@ -14,7 +14,7 @@ if (urlHost === "localhost" || urlHost === "127.0.0.1") {
   server = `ws://localhost:${port}`;
 }
 
-const socket = new WebSocket(server);
+let socket: WebSocket;
 
 const level = ref(Level.BEGINNER);
 const clientCount = ref(0);
@@ -86,33 +86,48 @@ const flag = (item: Cell, event: MouseEvent) => {
   );
 };
 
-socket.onopen = function () {
-  console.log("Connected");
+const connect = () => {
+  socket = new WebSocket(server);
 
-  socket.send(
-    JSON.stringify({
-      event: "gameInfo",
-      data: "test",
-    })
-  );
+  socket.onopen = function () {
+    // console.log("Connected");
 
-  socket.onmessage = function (data) {
-    // console.log(data);
-    // console.log(data.data);
-    let json = JSON.parse(data.data);
-    console.log(json);
-    switch (json.event) {
-      case "gameInfo":
-        // console.log(`cellsInfo: ${json.data}`);
-        clientCount.value = json.data.clientCount;
-        cells.value = json.data.cells;
-        gameState.value = json.data.gameState;
-        break;
-      default:
-        console.log(`unknow event: ${json.event}`);
-    }
+    socket.send(
+      JSON.stringify({
+        event: "gameInfo",
+        data: "test",
+      })
+    );
+
+    socket.onmessage = function (data) {
+      // console.log(data);
+      // console.log(data.data);
+      let json = JSON.parse(data.data);
+      console.log(json);
+      switch (json.event) {
+        case "gameInfo":
+          // console.log(`cellsInfo: ${json.data}`);
+          clientCount.value = json.data.clientCount;
+          cells.value = json.data.cells;
+          gameState.value = json.data.gameState;
+          break;
+        default:
+          console.log(`unknow event: ${json.event}`);
+      }
+    };
+  };
+
+  socket.onclose = function () {
+    setTimeout(connect, 1000);
+  };
+
+  socket.onerror = function (error) {
+    console.error("WebSocket error:", error);
+    socket.close();
   };
 };
+
+connect();
 </script>
 
 <template>
