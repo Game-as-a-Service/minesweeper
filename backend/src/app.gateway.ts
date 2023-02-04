@@ -16,6 +16,15 @@ export class WsGateway {
 
   constructor(private readonly appService: AppService) {
     this.clientList = [];
+
+    setInterval(() => {
+      this.server.clients.forEach(function each(ws: any) {
+        if (ws.isAlive === false) return ws.terminate();
+
+        ws.isAlive = false;
+        ws.send(JSON.stringify({ event: 'ping', data: '' }));
+      });
+    }, 1000 * 10);
   }
 
   handleConnection(client: any) {
@@ -33,6 +42,12 @@ export class WsGateway {
     if (index > -1) {
       this.clientList.splice(index, 1);
     }
+  }
+
+  @SubscribeMessage('pong')
+  // onBoard(client: any, data: any): WsResponse<object> {
+  onPong(client: any): void {
+    client.isAlive = true;
   }
 
   // client send: {"event":"board","data":""}

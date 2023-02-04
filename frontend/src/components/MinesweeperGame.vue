@@ -104,8 +104,16 @@ const connect = () => {
     // console.log(data);
     // console.log(data.data);
     let json = JSON.parse(data.data);
-    console.log(json);
+    // console.log(json);
     switch (json.event) {
+      case "ping":
+        socket.send(
+          JSON.stringify({
+            event: "pong",
+            data: "",
+          })
+        );
+        break;
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
         clientCount.value = json.data.clientCount;
