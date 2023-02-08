@@ -44,10 +44,9 @@ export class WsGateway {
   }
 
   @SubscribeMessage('ping')
-  // onBoard(client: any, data: any): WsResponse<object> {
-  onPing(client: any): void {
+  onPing(client: any, data: any): WsResponse<object> {
     client.isAlive = true;
-    client.send(JSON.stringify({ event: 'pong', data: '' }));
+    return { event: 'pong', data };
   }
 
   // client send: {"event":"board","data":""}

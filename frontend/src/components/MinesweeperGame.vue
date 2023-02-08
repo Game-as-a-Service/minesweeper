@@ -88,6 +88,7 @@ const flag = (item: Cell, event: MouseEvent) => {
 
 let interval: ReturnType<typeof setInterval> | undefined;
 let isAlive = true;
+let ping = ref(0);
 
 const connect = () => {
   socket = new WebSocket(server);
@@ -95,11 +96,15 @@ const connect = () => {
   socket.onopen = function () {
     // console.log("Connected");
 
+    clearInterval(interval);
     interval = setInterval(() => {
       if (isAlive === false) socket.close();
 
       isAlive = false;
-      socket.send(JSON.stringify({ event: "ping", data: "" }));
+      let data = {
+        timestamp: Date.now(),
+      };
+      socket.send(JSON.stringify({ event: "ping", data }));
     }, 1000 * 1);
 
     socket.send(
@@ -118,6 +123,8 @@ const connect = () => {
     switch (json.event) {
       case "pong":
         isAlive = true;
+        // console.log(json.data.timestamp);
+        ping.value = Date.now() - json.data.timestamp;
         break;
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
@@ -148,6 +155,7 @@ connect();
   <div class="about">
     <div class="box">
       <div class="center">Online: {{ clientCount }}</div>
+      <div class="center">Ping: {{ ping }} ms</div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
       <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
       <div>
