@@ -86,7 +86,7 @@ const flag = (item: Cell, event: MouseEvent) => {
   );
 };
 
-let interval = -1;
+let interval: ReturnType<typeof setInterval> | undefined;
 let isAlive = true;
 
 const connect = () => {
