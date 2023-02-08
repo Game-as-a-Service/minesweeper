@@ -86,11 +86,21 @@ const flag = (item: Cell, event: MouseEvent) => {
   );
 };
 
+let interval = -1;
+let isAlive = true;
+
 const connect = () => {
   socket = new WebSocket(server);
 
   socket.onopen = function () {
     // console.log("Connected");
+
+    interval = setInterval(() => {
+      if (isAlive === false) socket.close();
+
+      isAlive = false;
+      socket.send(JSON.stringify({ event: "ping", data: "" }));
+    }, 1000 * 1);
 
     socket.send(
       JSON.stringify({
@@ -106,13 +116,8 @@ const connect = () => {
     let json = JSON.parse(data.data);
     // console.log(json);
     switch (json.event) {
-      case "ping":
-        socket.send(
-          JSON.stringify({
-            event: "pong",
-            data: "",
-          })
-        );
+      case "pong":
+        isAlive = true;
         break;
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
@@ -126,6 +131,7 @@ const connect = () => {
   };
 
   socket.onclose = function () {
+    clearInterval(interval);
     setTimeout(connect, 1000);
   };
 

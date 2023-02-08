@@ -22,7 +22,6 @@ export class WsGateway {
         if (ws.isAlive === false) return ws.terminate();
 
         ws.isAlive = false;
-        ws.send(JSON.stringify({ event: 'ping', data: '' }));
       });
     }, 1000 * 10);
   }
@@ -44,10 +43,11 @@ export class WsGateway {
     }
   }
 
-  @SubscribeMessage('pong')
+  @SubscribeMessage('ping')
   // onBoard(client: any, data: any): WsResponse<object> {
-  onPong(client: any): void {
+  onPing(client: any): void {
     client.isAlive = true;
+    client.send(JSON.stringify({ event: 'pong', data: '' }));
   }
 
   // client send: {"event":"board","data":""}
