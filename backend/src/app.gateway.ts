@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { AppService } from './app.service';
-import { Board } from './minesweeper/board';
+import { Game } from './minesweeper/game';
 
 @WebSocketGateway()
 export class WsGateway {
@@ -27,7 +27,7 @@ export class WsGateway {
   }
 
   handleConnection(client: any) {
-    client.game = new Board();
+    client.game = new Game();
     client.game.start();
     this.clientList.push(client);
   }
@@ -120,11 +120,11 @@ export class WsGateway {
     return this.gameInfo(client.game);
   }
 
-  gameInfo(game: Board) {
+  gameInfo(game: Game) {
     const data = {
       clientCount: this.clientList.length,
       gameState: game.gameState,
-      cells: game.cells,
+      cells: game.board.cells,
     };
 
     return { event: 'gameInfo', data };
