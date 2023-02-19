@@ -1,4 +1,4 @@
-import { Size } from "./size";
+import { Size } from './size';
 
 export class LevelConfig {
   size: Size;

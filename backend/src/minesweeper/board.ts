@@ -15,7 +15,7 @@ export class Board {
 
   init() {
     this.flagCount = 0;
-    
+
     this.generateCells();
     this.generateMine(this.game.levelConfig);
     this.generateNumber(this.game.levelConfig);

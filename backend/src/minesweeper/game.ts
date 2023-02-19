@@ -1,8 +1,8 @@
-import { Board } from "./board";
+import { Board } from './board';
 import { GameState, WinLoseState } from './gameState';
 import { Level } from './level';
-import { LevelConfig } from "./levelConfig";
-import { Size } from "./size";
+import { LevelConfig } from './levelConfig';
+import { Size } from './size';
 
 const LevelConfigMap: Map<Level, LevelConfig> = new Map<Level, LevelConfig>();
 LevelConfigMap.set(Level.BEGINNER, new LevelConfig(new Size(9, 9), 10));
