@@ -154,6 +154,7 @@ connect();
 <template>
   <div class="about">
     <div class="box">
+      <div>Hi</div>
       <div class="center">Online: {{ clientCount }}</div>
       <div class="center">Ping: {{ ping }} ms</div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
