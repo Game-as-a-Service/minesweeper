@@ -4,7 +4,42 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        subdir: [backend, frontend]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install package
+        run: |
+          cd ${{ matrix.subdir }}
+          yarn
+      - name: Run lint
+        run: |
+          cd ${{ matrix.subdir }}
+          yarn lint-check
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        subdir: [backend, frontend]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install package
+        run: |
+          cd ${{ matrix.subdir }}
+          yarn
+      - name: Run test
+        run: |
+          cd ${{ matrix.subdir }}
+          yarn test
   build:
+    needs: [lint, test]
     strategy:
       fail-fast: false
       matrix:
@@ -12,6 +47,19 @@ jobs:
     uses: allyusd/workflows/.github/workflows/docker-publish.yml@main
     with:
       subdir: ${{ matrix.subdir }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Webhook
+        run: |
+          curl -s -X POST \
+          --fail \
+          -F token=${{ secrets.WEBHOOK_TOKEN }} \
+          -F ref=main \
+          ${{ secrets.WEBHOOK_URL }} \
+          > /dev/null
 #   deploy:
 #     needs: build
 #     uses: allyusd/workflows/.github/workflows/docker-compose.yml@main
@@ -22,16 +70,3 @@ jobs:
 #       host: ${{ secrets.SSH_HOST }}
 #       username: ${{ secrets.SSH_USERNAME }}
 #       key: ${{ secrets.SSH_KEY }}
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: webhook
-        run: |
-          curl -s -X POST \
-          --fail \
-          -F token=${{ secrets.WEBHOOK_TOKEN }} \
-          -F ref=main \
-          ${{ secrets.WEBHOOK_URL }} \
-          > /dev/null
