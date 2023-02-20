@@ -1,6 +1,6 @@
 import { Cell, CellState } from './cell';
 import { Game } from './game';
-import { GameState, WinLoseState } from './gameState';
+import { WinLoseState } from './gameState';
 import { LevelConfig } from './levelConfig';
 
 export class Board {
