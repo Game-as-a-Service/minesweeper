@@ -25,11 +25,13 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: webhook
         run: |
-          curl -X POST \
+          curl -s -X POST \
           --fail \
           -F token=${{ secrets.WEBHOOK_TOKEN }} \
           -F ref=main \
-          ${{ secrets.WEBHOOK_URL }}
+          ${{ secrets.WEBHOOK_URL }} \
+          > /dev/null
