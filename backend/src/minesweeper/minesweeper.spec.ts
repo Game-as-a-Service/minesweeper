@@ -1,5 +1,5 @@
-import { Game } from "./game";
-import { WinLoseState } from "./gameState";
+import { Game } from './game';
+import { WinLoseState } from './gameState';
 
 describe('minesweeper', () => {
   let game: Game;

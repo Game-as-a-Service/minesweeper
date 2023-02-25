@@ -42,20 +42,20 @@ describe('WebSocket Gateway', () => {
 
   it('ping pong', (done) => {
     ws.on('open', () => {
-      const data = JSON.stringify({ event: "ping", data: {} });
+      const data = JSON.stringify({ event: 'ping', data: {} });
       ws.send(data);
     });
 
     ws.on('message', (message) => {
       const event = JSON.parse(message.toString());
-      expect(event.event).toBe("pong");
+      expect(event.event).toBe('pong');
       done();
     });
   });
 
   it('when game start then gameState should be NONE', (done) => {
     ws.on('open', () => {
-      const data = JSON.stringify({ event: "ping", data: {} });
+      const data = JSON.stringify({ event: 'ping', data: {} });
       ws.send(data);
     });
 
@@ -64,11 +64,11 @@ describe('WebSocket Gateway', () => {
       // expect(event.event).toBe("gameInfo");
 
       switch (event.event) {
-        case "pong":
-          const data = JSON.stringify({ event: "gameInfo", data: {} });
+        case 'pong':
+          const data = JSON.stringify({ event: 'gameInfo', data: {} });
           ws.send(data);
           break;
-        case "gameInfo":
+        case 'gameInfo':
           expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
           done();
           break;
