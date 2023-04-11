@@ -3,15 +3,16 @@
 // [Using promises - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
 // [TypeScript Promise - Scaler Topics](https://www.scaler.com/topics/typescript/typescript-promise/)
 describe.skip('Testing Asynchronous Code', () => {
-  beforeAll(async () => {});
+  // beforeAll(async () => {});
 
-  afterAll(async () => {});
+  // afterAll(async () => {});
 
-  beforeEach(() => {});
+  // beforeEach(() => {});
 
-  afterEach(() => {});
+  // afterEach(() => {});
 
   const fetchData = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return new Promise<string>(function (resolve, reject) {
       setTimeout(function (): void {
         resolve('peanut butter');
