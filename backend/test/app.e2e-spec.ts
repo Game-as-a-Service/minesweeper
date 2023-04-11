@@ -4,7 +4,8 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { WsAdapter } from '@nestjs/platform-ws';
 
-describe('AppController (e2e)', () => {
+// 範例程式，沒使用
+describe.skip('AppController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
