@@ -66,6 +66,7 @@ describe('WebSocket Gateway', () => {
     sendData('open', data);
   };
 
+  // 基本 websocket ping pong
   it('ping pong', (done) => {
     ws.on('open', () => {
       ping();
@@ -78,6 +79,7 @@ describe('WebSocket Gateway', () => {
     });
   });
 
+  // 基本遊戲狀態
   it('when game start then gameState should be NONE', (done) => {
     ws.on('open', () => {
       const data = JSON.stringify({ event: 'ping', data: {} });
@@ -103,6 +105,7 @@ describe('WebSocket Gateway', () => {
     });
   });
 
+  // 只能踩還沒有踩過且沒有插旗的格子 - 這個位置還沒踩過且沒有插旗
   it('when cell is unopened then open should be opened', (done) => {
     ws.on('open', () => {
       const data = JSON.stringify({ event: 'ping', data: {} });
@@ -122,13 +125,68 @@ describe('WebSocket Gateway', () => {
           gameInfoCount++;
           switch (gameInfoCount) {
             case 1:
+              // given
+              // 這個位置還沒踩過且沒有插旗
               // console.log(`gameInfo: ${gameInfoCount}`);
               // console.log(event.data);
               // console.log(event.data.cells[0][0].state === CellState.UNOPENED);
               expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
+
+              // when
+              // 玩家踩地雷
               open(0, 0);
               break;
             case 2:
+              // then
+              // 這一格被踩過
+              expect(event.data.cells[0][0].state).toBe(CellState.OPENED);
+              done();
+              break;
+            default:
+              throw new Error(`unhandled case`);
+          }
+          break;
+        default:
+          throw new Error(`unhandled case`);
+      }
+    });
+  });
+
+  // 只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被踩過
+  it('when cell is unopened then open should be opened', (done) => {
+    ws.on('open', () => {
+      const data = JSON.stringify({ event: 'ping', data: {} });
+      ws.send(data);
+    });
+
+    let gameInfoCount = 0;
+    ws.on('message', (message) => {
+      const event = JSON.parse(message.toString());
+      // expect(event.event).toBe("gameInfo");
+
+      switch (event.event) {
+        case 'pong':
+          gameInfo();
+          break;
+        case 'gameInfo':
+          gameInfoCount++;
+          switch (gameInfoCount) {
+            case 1:
+              expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
+              open(0, 0);
+              break;
+            case 2:
+              // given
+              // 這個位置已經被踩過
+              expect(event.data.cells[0][0].state).toBe(CellState.OPENED);
+
+              // when
+              // 玩家踩地雷
+              open(0, 0);
+              break;
+            case 3:
+              // then
+              // 沒有變化
               expect(event.data.cells[0][0].state).toBe(CellState.OPENED);
               done();
               break;

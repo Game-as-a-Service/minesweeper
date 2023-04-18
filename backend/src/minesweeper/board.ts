@@ -26,7 +26,7 @@ export class Board {
       return;
     }
 
-    console.log(`x:${x}, y:${y}`);
+    // console.log(`x:${x}, y:${y}`);
     const cell = this.cells[y][x];
     if (cell === undefined) {
       return;
