@@ -28,7 +28,7 @@ export class Game {
     this.gameState.winLose = WinLoseState.NONE;
     this.gameState.displayMineCount = this.levelConfig.mineCount;
 
-    console.log(`start`);
+    // console.log(`start`);
   }
 
   open(x: number, y: number) {
