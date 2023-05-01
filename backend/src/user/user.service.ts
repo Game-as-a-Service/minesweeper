@@ -29,4 +29,14 @@ export class UserService {
   findAll(): User[] {
     return this.userList;
   }
+
+  findOne(account: string): User | undefined {
+    for (const user of this.userList) {
+      if (user.account === account) {
+        return user;
+      }
+    }
+
+    return undefined;
+  }
 }
