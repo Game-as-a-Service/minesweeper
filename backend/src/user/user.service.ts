@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user';
+import { hash } from 'src/common/bcryptHelper';
 
 @Injectable()
 export class UserService {
   private readonly userList: User[] = [];
 
-  create(newUser: User) {
+  async create(newUser: User) {
     if (
       newUser.account === undefined ||
       newUser.account === '' ||
@@ -20,6 +21,8 @@ export class UserService {
         return 'user exist';
       }
     }
+
+    newUser.password = await hash(newUser.password);
 
     this.userList.push(newUser);
 
