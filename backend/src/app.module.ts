@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './auth/constants';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
 
@@ -15,6 +17,10 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
     }),
     UserModule,
     AuthModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '60s' },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, WsGateway],
