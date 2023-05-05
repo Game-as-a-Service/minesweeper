@@ -19,7 +19,7 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
     AuthModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: jwtConstants.expiresIn },
     }),
   ],
   controllers: [AppController],
