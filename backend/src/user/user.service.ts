@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user';
-import { hash } from 'src/common/bcryptHelper';
+import { hash } from '../common/bcryptHelper';
 
 @Injectable()
 export class UserService {
