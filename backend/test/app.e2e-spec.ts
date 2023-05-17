@@ -30,9 +30,7 @@ describe.skip('AppController (e2e)', () => {
   //     .expect('Hello World!');
   // });
 
-    it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(401);
+  it('/ (GET)', () => {
+    return request(app.getHttpServer()).get('/').expect(401);
   });
 });

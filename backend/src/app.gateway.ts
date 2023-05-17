@@ -10,7 +10,7 @@ import { Game } from './minesweeper/game';
 import { OnApplicationShutdown } from '@nestjs/common';
 
 @WebSocketGateway()
-export class WsGateway implements OnApplicationShutdown  {
+export class WsGateway implements OnApplicationShutdown {
   @WebSocketServer()
   server: Server;
   clientList: any[];
@@ -28,6 +28,7 @@ export class WsGateway implements OnApplicationShutdown  {
     }, 1000 * 10);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onApplicationShutdown(signal?: string) {
     clearInterval(this.isAliveTimer);
   }

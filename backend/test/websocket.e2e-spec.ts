@@ -78,7 +78,6 @@ describe('WebSocket Gateway', () => {
 
   // 基本 websocket ping pong
   it('ping pong', (done) => {
-
     ws.on('open', () => {
       ping();
     });
