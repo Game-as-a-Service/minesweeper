@@ -21,6 +21,7 @@ describe('WebSocket Gateway', () => {
   beforeAll(async () => {
     app = await NestFactory.create(AppModule);
     app.useWebSocketAdapter(new WsAdapter(app));
+    app.enableShutdownHooks();
     await app.listen(3000);
   });
 
@@ -77,6 +78,7 @@ describe('WebSocket Gateway', () => {
 
   // 基本 websocket ping pong
   it('ping pong', (done) => {
+
     ws.on('open', () => {
       ping();
     });
@@ -253,16 +255,22 @@ describe('WebSocket Gateway', () => {
 
   // TODO 可以透過 Bug 找到有地雷的格子，但是修正之後正常的情況應該怎麼做？
   it('踩到地雷遊戲結束', (done) => {
-    done();
+    ws.on('open', () => {
+      done();
+    });
   });
 
   // TODO 同上，這種預先設計的情況應該怎麼處理？
   it('沒踩到地雷會知道附近有多少地雷', (done) => {
-    done();
+    ws.on('open', () => {
+      done();
+    });
   });
 
   // TODO 同上
   it('沒踩到地雷且附近也沒有地雷，自動踩附近的所有位置', (done) => {
-    done();
+    ws.on('open', () => {
+      done();
+    });
   });
 });

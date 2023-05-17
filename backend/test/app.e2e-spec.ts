@@ -15,13 +15,24 @@ describe.skip('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useWebSocketAdapter(new WsAdapter(app));
+    app.enableShutdownHooks();
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  // it('/ (GET)', () => {
+  //   return request(app.getHttpServer())
+  //     .get('/')
+  //     .expect(200)
+  //     .expect('Hello World!');
+  // });
+
+    it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .expect(401);
   });
 });

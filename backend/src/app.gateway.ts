@@ -7,23 +7,29 @@ import {
 import { Server } from 'ws';
 import { AppService } from './app.service';
 import { Game } from './minesweeper/game';
+import { OnApplicationShutdown } from '@nestjs/common';
 
 @WebSocketGateway()
-export class WsGateway {
+export class WsGateway implements OnApplicationShutdown  {
   @WebSocketServer()
   server: Server;
   clientList: any[];
+  isAliveTimer: NodeJS.Timer = undefined;
 
   constructor(private readonly appService: AppService) {
     this.clientList = [];
 
-    setInterval(() => {
+    this.isAliveTimer = setInterval(() => {
       this.server.clients.forEach(function each(ws: any) {
         if (ws.isAlive === false) return ws.terminate();
 
         ws.isAlive = false;
       });
     }, 1000 * 10);
+  }
+
+  onApplicationShutdown(signal?: string) {
+    clearInterval(this.isAliveTimer);
   }
 
   handleConnection(client: any) {
