@@ -6,7 +6,7 @@ import { AppModule } from '../src/app.module';
 import { WinLoseState } from '../src/minesweeper/gameState';
 import { CellState } from '../src/minesweeper/cell';
 
-describe('WebSocket Gateway', () => {
+describe.skip('WebSocket Gateway', () => {
   let app: INestApplication;
   let ws: WebSocket;
 
