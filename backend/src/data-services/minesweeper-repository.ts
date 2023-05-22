@@ -12,7 +12,7 @@ export class MinesweeperRepository implements IRepository<Minesweeper> {
 
   async findById(id: string): Promise<Minesweeper | null> {
     const data: MinesweeperData = await this._dao.findById(id);
-    if (data === null) {
+    if (data === null || data === undefined) {
       return null;
     }
     return this._dataModel.toDomain(data) as Minesweeper;

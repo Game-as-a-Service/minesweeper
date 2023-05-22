@@ -26,17 +26,23 @@ const changeLevel = function (newLevel: Level) {
   start();
 };
 
+const sendData = (event: string, data: object) => {
+  socket.send(
+    JSON.stringify({
+      event: event,
+      data: JSON.stringify({
+        gameId: localStorage.getItem("gameId"),
+        ...data,
+      }),
+    })
+  );
+};
+
 const start = function () {
   let data = {
     level: level.value,
   };
-
-  socket.send(
-    JSON.stringify({
-      event: "start",
-      data: JSON.stringify(data),
-    })
-  );
+  sendData("start", data);
 };
 
 const click = function (item: Cell) {
@@ -50,19 +56,9 @@ const click = function (item: Cell) {
   // console.log(`${item.state}`);
 
   if (item.state === CellState.UNOPENED) {
-    socket.send(
-      JSON.stringify({
-        event: "open",
-        data: JSON.stringify(data),
-      })
-    );
+    sendData("open", data);
   } else if (item.state === CellState.OPENED) {
-    socket.send(
-      JSON.stringify({
-        event: "chording",
-        data: JSON.stringify(data),
-      })
-    );
+    sendData("chording", data);
   }
 };
 
@@ -78,12 +74,7 @@ const flag = (item: Cell, event: MouseEvent) => {
     y: item.y,
   };
 
-  socket.send(
-    JSON.stringify({
-      event: "flag",
-      data: JSON.stringify(data),
-    })
-  );
+  sendData("flag", data);
 };
 
 let interval: ReturnType<typeof setInterval> | undefined;
@@ -107,12 +98,7 @@ const connect = () => {
       socket.send(JSON.stringify({ event: "ping", data }));
     }, 1000 * 1);
 
-    socket.send(
-      JSON.stringify({
-        event: "gameInfo",
-        data: "test",
-      })
-    );
+    sendData("gameInfo", {});
   };
 
   socket.onmessage = function (data) {
@@ -128,6 +114,7 @@ const connect = () => {
         break;
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
+        localStorage.setItem("gameId", json.data.gameId);
         clientCount.value = json.data.clientCount;
         cells.value = json.data.cells;
         gameState.value = json.data.gameState;

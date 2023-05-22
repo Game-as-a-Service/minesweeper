@@ -57,7 +57,6 @@ export class WsGateway implements OnApplicationShutdown {
   }
 
   async handleConnection(client: any) {
-    client.gameId = await this.startUseCase.execute();
     this.clientList.push(client);
   }
 
@@ -76,56 +75,61 @@ export class WsGateway implements OnApplicationShutdown {
 
   // client send: {"event":"board","data":""}
   @SubscribeMessage('gameInfo')
-  // onBoard(client: any, data: any): WsResponse<object> {
-  async onBoard(client: any): Promise<WsResponse<object>> {
-    return this.gameInfo(client.gameId);
+  async onGameInfo(client: any, data: string): Promise<WsResponse<object>> {
+    const input = JSON.parse(data);
+    return this.gameInfo(input.gameId);
   }
 
   // client send: {"event":"open","data":"{x: 0, y: 1}"}
   @SubscribeMessage('open')
   async onOpen(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    this.openUseCase.execute(client.gameId, input.x, input.y);
+    this.openUseCase.execute(input.gameId, input.x, input.y);
 
-    return this.gameInfo(client.gameId);
+    return this.gameInfo(input.gameId);
   }
 
   // client send: {"event":"flag","data":"{x: 0, y: 1}"}
   @SubscribeMessage('flag')
   async onFlag(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    this.flagUseCase.execute(client.gameId, input.x, input.y);
+    this.flagUseCase.execute(input.gameId, input.x, input.y);
 
-    return this.gameInfo(client.gameId);
+    return this.gameInfo(input.gameId);
   }
 
   // client send: {"event":"chording","data":"{x: 0, y: 1}"}
   @SubscribeMessage('chording')
   async onChording(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    this.chordingUseCase.execute(client.gameId, input.x, input.y);
+    this.chordingUseCase.execute(input.gameId, input.x, input.y);
 
-    return this.gameInfo(client.gameId);
+    return this.gameInfo(input.gameId);
   }
 
   // client send: {"event":"open","data":"{level: 0}"}
   @SubscribeMessage('start')
   async onStart(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    client.gameId = await this.startUseCase.execute(input.level);
+    const gameId = await this.startUseCase.execute(input.level);
 
-    return this.gameInfo(client.gameId);
+    return this.gameInfo(gameId);
   }
 
   async gameInfo(gameId: string) {
+    if (gameId === undefined || gameId === null) {
+      gameId = await this.startUseCase.execute();
+    }
+
     const game: Minesweeper = await this.minesweeperRepository.findById(gameId);
 
-    if (game === undefined) {
-      console.log(`game is undefined`);
+    if (game === null) {
+      console.log(`game is null`);
       return;
     }
 
     const data = {
+      gameId: gameId,
       clientCount: this.clientList.length,
       gameState: game.gameState,
       cells: game.board.cells,

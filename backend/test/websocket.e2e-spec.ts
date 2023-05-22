@@ -8,22 +8,15 @@ import { Cell, CellState } from '../src/minesweeper/cell';
 import { randomUUID } from 'crypto';
 import { MinesweeperData } from '../src/data-services/data/minesweeper.data';
 import { LevelConfig } from '../src/minesweeper/levelConfig';
-import { MinesweeperRepository } from '../src/data-services/minesweeper-repository';
-import MinesweeperDao from '../src/data-services/dao/minesweeper.dao';
-import MinesweeperDataModel from '../src/data-services/data-model/minesweeper.data-model';
 import { Minesweeper } from '../src/minesweeper/minesweeper';
+import { WsGateway } from '../src/app.gateway';
 
 describe('WebSocket Gateway', () => {
   let app: INestApplication;
   let ws: WebSocket;
 
-  // TODO 暫時放這邊
-  const minesweeperDao = new MinesweeperDao();
-  const minesweeperDataModel = new MinesweeperDataModel();
-  const minesweeperRepository = new MinesweeperRepository(
-    minesweeperDao,
-    minesweeperDataModel,
-  );
+  // TODO 之後要把 Repository 移到其它地方
+  let wsGateway: WsGateway;
 
   // beforeAll((done) => {
   //   NestFactory.create(AppModule).then((a) => {
@@ -37,6 +30,9 @@ describe('WebSocket Gateway', () => {
     app = await NestFactory.create(AppModule);
     app.useWebSocketAdapter(new WsAdapter(app));
     app.enableShutdownHooks();
+
+    wsGateway = app.get(WsGateway);
+
     await app.listen(3000);
   });
 
@@ -73,8 +69,9 @@ describe('WebSocket Gateway', () => {
     sendData('gameInfo', {});
   };
 
-  const open = (x: number, y: number) => {
+  const open = (gameId: string, x: number, y: number) => {
     const data = {
+      gameId,
       x,
       y,
     };
@@ -82,8 +79,9 @@ describe('WebSocket Gateway', () => {
     sendData('open', data);
   };
 
-  const flag = (x: number, y: number) => {
+  const flag = (gameId: string, x: number, y: number) => {
     const data = {
+      gameId,
       x,
       y,
     };
@@ -117,8 +115,7 @@ describe('WebSocket Gateway', () => {
 
       switch (event.event) {
         case 'pong':
-          const data = JSON.stringify({ event: 'gameInfo', data: {} });
-          ws.send(data);
+          gameInfo();
           break;
         case 'gameInfo':
           expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
@@ -157,7 +154,7 @@ describe('WebSocket Gateway', () => {
 
               // when
               // 玩家踩地雷
-              open(0, 0);
+              open(event.data.gameId, 0, 0);
               break;
             case 2:
               // then
@@ -194,7 +191,7 @@ describe('WebSocket Gateway', () => {
           switch (gameInfoCount) {
             case 1:
               expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
-              open(0, 0);
+              open(event.data.gameId, 0, 0);
               break;
             case 2:
               // given
@@ -203,7 +200,7 @@ describe('WebSocket Gateway', () => {
 
               // when
               // 玩家踩地雷
-              open(0, 0);
+              open(event.data.gameId, 0, 0);
               break;
             case 3:
               // then
@@ -240,7 +237,7 @@ describe('WebSocket Gateway', () => {
           switch (gameInfoCount) {
             case 1:
               expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
-              flag(0, 0);
+              flag(event.data.gameId, 0, 0);
               break;
             case 2:
               // given
@@ -249,7 +246,7 @@ describe('WebSocket Gateway', () => {
 
               // when
               // 玩家踩地雷
-              open(0, 0);
+              open(event.data.gameId, 0, 0);
               break;
             case 3:
               // then
@@ -305,8 +302,8 @@ describe('WebSocket Gateway', () => {
       levelConfig,
     };
 
-    const domain: Minesweeper = minesweeperDataModel.toDomain(data);
-    minesweeperRepository.save(domain);
+    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
+    wsGateway.minesweeperRepository.save(domain);
 
     ws.on('open', () => {
       done();
