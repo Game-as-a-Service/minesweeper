@@ -1,15 +1,15 @@
 import { Cell, CellState } from './cell';
-import { Game } from './game';
+import { Minesweeper } from './minesweeper';
 import { WinLoseState } from './gameState';
 import { LevelConfig } from './levelConfig';
 
 export class Board {
-  game: Game;
+  game: Minesweeper;
   cells: Cell[][];
   unopenedCells: number;
   flagCount: number;
 
-  constructor(game: Game) {
+  constructor(game: Minesweeper) {
     this.game = game;
   }
 
@@ -41,7 +41,7 @@ export class Board {
     if (cell.mine) {
       this.game.gameState.isPlay = false;
       this.game.gameState.winLose = WinLoseState.LOSE;
-      console.log('you lose');
+      // console.log('you lose');
       return;
     }
 
@@ -49,7 +49,7 @@ export class Board {
     if (this.unopenedCells === 0) {
       this.game.gameState.isPlay = false;
       this.game.gameState.winLose = WinLoseState.WIN;
-      console.log('you win');
+      // console.log('you win');
     }
 
     if (cell.number === 0) {

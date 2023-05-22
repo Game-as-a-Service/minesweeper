@@ -1,11 +1,11 @@
-import { Game } from './game';
+import { Minesweeper } from './minesweeper';
 import { WinLoseState } from './gameState';
 
 describe('minesweeper', () => {
-  let game: Game;
+  let game: Minesweeper;
 
   beforeEach(async () => {
-    game = new Game();
+    game = new Minesweeper();
   });
 
   describe('root', () => {

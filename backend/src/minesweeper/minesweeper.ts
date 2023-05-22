@@ -9,7 +9,8 @@ LevelConfigMap.set(Level.BEGINNER, new LevelConfig(new Size(9, 9), 10));
 LevelConfigMap.set(Level.INTERMEDIATE, new LevelConfig(new Size(16, 16), 40));
 LevelConfigMap.set(Level.EXPERT, new LevelConfig(new Size(30, 16), 99));
 
-export class Game {
+export class Minesweeper {
+  gameId: string;
   gameState: GameState;
   board: Board;
   levelConfig: LevelConfig;

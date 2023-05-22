@@ -6,8 +6,16 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { AppService } from './app.service';
-import { Game } from './minesweeper/game';
+import { Minesweeper } from './minesweeper/minesweeper';
 import { OnApplicationShutdown } from '@nestjs/common';
+
+import MinesweeperDao from './data-services/dao/minesweeper.dao';
+import MinesweeperDataModel from './data-services/data-model/minesweeper.data-model';
+import { MinesweeperRepository } from './data-services/minesweeper-repository';
+import { StartUseCase } from './use-case/startUseCase';
+import { OpenUseCase } from './use-case/openUseCase';
+import { FlagUseCase } from './use-case/flagUseCase';
+import { ChordingUseCase } from './use-case/chordingUseCase';
 
 @WebSocketGateway()
 export class WsGateway implements OnApplicationShutdown {
@@ -15,6 +23,21 @@ export class WsGateway implements OnApplicationShutdown {
   server: Server;
   clientList: any[];
   isAliveTimer: NodeJS.Timer = undefined;
+
+  // TODO Use Case 暫時放這邊
+  minesweeperDao = new MinesweeperDao();
+  minesweeperDataModel = new MinesweeperDataModel();
+  minesweeperRepository = new MinesweeperRepository(
+    this.minesweeperDao,
+    this.minesweeperDataModel,
+  );
+
+  startUseCase: StartUseCase = new StartUseCase(this.minesweeperRepository);
+  openUseCase: OpenUseCase = new OpenUseCase(this.minesweeperRepository);
+  flagUseCase: FlagUseCase = new FlagUseCase(this.minesweeperRepository);
+  chordingUseCase: ChordingUseCase = new ChordingUseCase(
+    this.minesweeperRepository,
+  );
 
   constructor(private readonly appService: AppService) {
     this.clientList = [];
@@ -33,17 +56,12 @@ export class WsGateway implements OnApplicationShutdown {
     clearInterval(this.isAliveTimer);
   }
 
-  handleConnection(client: any) {
-    client.game = new Game();
-    client.game.start();
+  async handleConnection(client: any) {
+    client.gameId = await this.startUseCase.execute();
     this.clientList.push(client);
   }
 
   handleDisconnect(client) {
-    if (client.game) {
-      delete client.game;
-    }
-
     const index = this.clientList.indexOf(client, 0);
     if (index > -1) {
       this.clientList.splice(index, 1);
@@ -59,75 +77,54 @@ export class WsGateway implements OnApplicationShutdown {
   // client send: {"event":"board","data":""}
   @SubscribeMessage('gameInfo')
   // onBoard(client: any, data: any): WsResponse<object> {
-  onBoard(client: any): WsResponse<object> {
-    if (client.game === undefined) {
-      console.log(`client.game is undefined`);
-      return;
-    }
-
-    return this.gameInfo(client.game);
+  async onBoard(client: any): Promise<WsResponse<object>> {
+    return this.gameInfo(client.gameId);
   }
 
   // client send: {"event":"open","data":"{x: 0, y: 1}"}
   @SubscribeMessage('open')
-  onOpen(client: any, data: string): WsResponse<object> {
-    if (client.game === undefined) {
-      console.log(`client.game is undefined`);
-      return;
-    }
-
+  async onOpen(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    // console.log(`open: ${input}`);
-    // console.log(`miinesweeper: ${this.appService.minesweeper.unopenedCells}`)
-    client.game.open(input.x, input.y);
+    this.openUseCase.execute(client.gameId, input.x, input.y);
 
-    return this.gameInfo(client.game);
+    return this.gameInfo(client.gameId);
   }
 
   // client send: {"event":"flag","data":"{x: 0, y: 1}"}
   @SubscribeMessage('flag')
-  onFlag(client: any, data: string): WsResponse<object> {
-    if (client.game === undefined) {
-      console.log(`client.game is undefined`);
-      return;
-    }
-
+  async onFlag(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    client.game.flag(input.x, input.y);
+    this.flagUseCase.execute(client.gameId, input.x, input.y);
 
-    return this.gameInfo(client.game);
+    return this.gameInfo(client.gameId);
   }
 
   // client send: {"event":"chording","data":"{x: 0, y: 1}"}
   @SubscribeMessage('chording')
-  onChording(client: any, data: string): WsResponse<object> {
-    if (client.game === undefined) {
-      console.log(`client.game is undefined`);
-      return;
-    }
-
+  async onChording(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    client.game.chording(input.x, input.y);
+    this.chordingUseCase.execute(client.gameId, input.x, input.y);
 
-    return this.gameInfo(client.game);
+    return this.gameInfo(client.gameId);
   }
 
   // client send: {"event":"open","data":"{level: 0}"}
   @SubscribeMessage('start')
-  onStart(client: any, data: string): WsResponse<object> {
-    if (client.game === undefined) {
-      console.log(`client.game is undefined`);
+  async onStart(client: any, data: string): Promise<WsResponse<object>> {
+    const input = JSON.parse(data);
+    client.gameId = await this.startUseCase.execute(input.level);
+
+    return this.gameInfo(client.gameId);
+  }
+
+  async gameInfo(gameId: string) {
+    const game: Minesweeper = await this.minesweeperRepository.findById(gameId);
+
+    if (game === undefined) {
+      console.log(`game is undefined`);
       return;
     }
 
-    const input = JSON.parse(data);
-    // console.log(`${input.level}`);
-    client.game.start(input.level);
-
-    return this.gameInfo(client.game);
-  }
-
-  gameInfo(game: Game) {
     const data = {
       clientCount: this.clientList.length,
       gameState: game.gameState,
