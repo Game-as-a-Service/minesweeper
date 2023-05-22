@@ -65,8 +65,8 @@ describe('WebSocket Gateway', () => {
     sendData('ping', {});
   };
 
-  const gameInfo = () => {
-    sendData('gameInfo', {});
+  const gameInfo = (gameId: string = undefined) => {
+    sendData('gameInfo', { gameId });
   };
 
   const open = (gameId: string, x: number, y: number) => {
@@ -275,7 +275,6 @@ describe('WebSocket Gateway', () => {
     return cells;
   };
 
-  // TODO 可以透過 Bug 找到有地雷的格子，但是修正之後正常的情況應該怎麼做？
   it('踩到地雷遊戲結束', (done) => {
     // Given
     const levelConfig = {
@@ -302,11 +301,47 @@ describe('WebSocket Gateway', () => {
       levelConfig,
     };
 
+    // 在 0, 0 放地雷
+    data.board.cells[0][0].mine = true;
+
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
     wsGateway.minesweeperRepository.save(domain);
 
     ws.on('open', () => {
-      done();
+      const data = JSON.stringify({ event: 'ping', data: {} });
+      ws.send(data);
+    });
+
+    let gameInfoCount = 0;
+    ws.on('message', (message) => {
+      const event = JSON.parse(message.toString());
+
+      switch (event.event) {
+        case 'pong':
+          gameInfo(domain.gameId);
+          break;
+        case 'gameInfo':
+          gameInfoCount++;
+          switch (gameInfoCount) {
+            case 1:
+              expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
+              // When
+              // 玩家踩地雷
+              open(event.data.gameId, 0, 0);
+              break;
+            case 2:
+              // Then
+              // 遊戲結束
+              expect(event.data.gameState.winLose).toBe(WinLoseState.LOSE);
+              done();
+              break;
+            default:
+              throw new Error(`unhandled case`);
+          }
+          break;
+        default:
+          throw new Error(`unhandled case`);
+      }
     });
   });
 
