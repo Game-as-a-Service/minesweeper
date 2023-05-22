@@ -4,11 +4,26 @@ import { NestFactory } from '@nestjs/core';
 import * as WebSocket from 'ws';
 import { AppModule } from '../src/app.module';
 import { WinLoseState } from '../src/minesweeper/gameState';
-import { CellState } from '../src/minesweeper/cell';
+import { Cell, CellState } from '../src/minesweeper/cell';
+import { randomUUID } from 'crypto';
+import { MinesweeperData } from '../src/data-services/data/minesweeper.data';
+import { LevelConfig } from '../src/minesweeper/levelConfig';
+import { MinesweeperRepository } from '../src/data-services/minesweeper-repository';
+import MinesweeperDao from '../src/data-services/dao/minesweeper.dao';
+import MinesweeperDataModel from '../src/data-services/data-model/minesweeper.data-model';
+import { Minesweeper } from '../src/minesweeper/minesweeper';
 
 describe('WebSocket Gateway', () => {
   let app: INestApplication;
   let ws: WebSocket;
+
+  // TODO 暫時放這邊
+  const minesweeperDao = new MinesweeperDao();
+  const minesweeperDataModel = new MinesweeperDataModel();
+  const minesweeperRepository = new MinesweeperRepository(
+    minesweeperDao,
+    minesweeperDataModel,
+  );
 
   // beforeAll((done) => {
   //   NestFactory.create(AppModule).then((a) => {
@@ -252,8 +267,47 @@ describe('WebSocket Gateway', () => {
     });
   });
 
+  const generateCells = (levelConfig: LevelConfig): Cell[][] => {
+    const cells = [];
+    for (let y = 0; y < levelConfig.size.y; y++) {
+      cells[y] = [];
+      for (let x = 0; x < levelConfig.size.x; x++) {
+        cells[y][x] = new Cell(x, y);
+      }
+    }
+    return cells;
+  };
+
   // TODO 可以透過 Bug 找到有地雷的格子，但是修正之後正常的情況應該怎麼做？
   it('踩到地雷遊戲結束', (done) => {
+    // Given
+    const levelConfig = {
+      size: {
+        x: 3,
+        y: 3,
+      },
+      mineCount: 1,
+    };
+
+    const data: MinesweeperData = {
+      gameId: randomUUID(),
+      gameState: {
+        isPlay: true,
+        winLose: WinLoseState.NONE,
+        displayMineCount: levelConfig.mineCount,
+      },
+      board: {
+        cells: generateCells(levelConfig),
+        unopenedCells:
+          levelConfig.size.x * levelConfig.size.y - levelConfig.mineCount,
+        flagCount: 0,
+      },
+      levelConfig,
+    };
+
+    const domain: Minesweeper = minesweeperDataModel.toDomain(data);
+    minesweeperRepository.save(domain);
+
     ws.on('open', () => {
       done();
     });
