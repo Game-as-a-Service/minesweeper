@@ -275,8 +275,7 @@ describe('WebSocket Gateway', () => {
     return cells;
   };
 
-  it('踩到地雷遊戲結束', (done) => {
-    // Given
+  const initData = (): MinesweeperData => {
     const levelConfig = {
       size: {
         x: 3,
@@ -300,6 +299,13 @@ describe('WebSocket Gateway', () => {
       },
       levelConfig,
     };
+
+    return data;
+  };
+
+  it('踩到地雷遊戲結束', (done) => {
+    // Given
+    const data = initData();
 
     // 在 0, 0 放地雷
     data.board.cells[0][0].mine = true;
@@ -345,17 +351,106 @@ describe('WebSocket Gateway', () => {
     });
   });
 
-  // TODO 同上，這種預先設計的情況應該怎麼處理？
   it('沒踩到地雷會知道附近有多少地雷', (done) => {
+    // Given
+    const data = initData();
+
+    // 在 0, 0 放地雷
+    data.board.cells[0][1].mine = true;
+    data.board.cells[0][0].number = 1;
+
+    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
+    wsGateway.minesweeperRepository.save(domain);
+
     ws.on('open', () => {
-      done();
+      const data = JSON.stringify({ event: 'ping', data: {} });
+      ws.send(data);
+    });
+
+    let gameInfoCount = 0;
+    ws.on('message', (message) => {
+      const event = JSON.parse(message.toString());
+
+      switch (event.event) {
+        case 'pong':
+          gameInfo(domain.gameId);
+          break;
+        case 'gameInfo':
+          gameInfoCount++;
+          switch (gameInfoCount) {
+            case 1:
+              // When
+              // 玩家踩地雷
+              open(event.data.gameId, 0, 0);
+              break;
+            case 2:
+              // Then
+              // 遊戲結束
+              expect(event.data.cells[0][0].number).toBe(1);
+              done();
+              break;
+            default:
+              throw new Error(`unhandled case`);
+          }
+          break;
+        default:
+          throw new Error(`unhandled case`);
+      }
     });
   });
 
-  // TODO 同上
   it('沒踩到地雷且附近也沒有地雷，自動踩附近的所有位置', (done) => {
+    // Given
+    const data = initData();
+
+    // 在 2, 2 放地雷
+    data.board.cells[2][2].mine = true;
+
+    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
+    wsGateway.minesweeperRepository.save(domain);
+
     ws.on('open', () => {
-      done();
+      const data = JSON.stringify({ event: 'ping', data: {} });
+      ws.send(data);
+    });
+
+    let gameInfoCount = 0;
+    ws.on('message', (message) => {
+      const event = JSON.parse(message.toString());
+
+      switch (event.event) {
+        case 'pong':
+          gameInfo(domain.gameId);
+          break;
+        case 'gameInfo':
+          gameInfoCount++;
+          switch (gameInfoCount) {
+            case 1:
+              expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
+              expect(event.data.cells[0][1].state).toBe(CellState.UNOPENED);
+              // When
+              // 玩家踩地雷
+              open(event.data.gameId, 0, 0);
+              break;
+            case 2:
+              // Then
+              // 自動踩附近的所有位置
+              for (let y = 0; y < data.levelConfig.size.y; y++) {
+                for (let x = 0; x < data.levelConfig.size.x; x++) {
+                  if (x !== 2 && y !== 2) {
+                    expect(event.data.cells[y][x].state).toBe(CellState.OPENED);
+                  }
+                }
+              }
+              done();
+              break;
+            default:
+              throw new Error(`unhandled case`);
+          }
+          break;
+        default:
+          throw new Error(`unhandled case`);
+      }
     });
   });
 });
