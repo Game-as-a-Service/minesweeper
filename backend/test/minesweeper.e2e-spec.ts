@@ -10,7 +10,7 @@ import * as WebSocket from 'ws';
 import { WinLoseState } from '../src/minesweeper/gameState';
 
 // [TypeScript Promise - Scaler Topics](https://www.scaler.com/topics/typescript/typescript-promise/)
-describe.skip('Asynchronous WebSocket Code', () => {
+describe('Asynchronous WebSocket Code', () => {
   let app: INestApplication;
   let ws: WebSocket;
 
