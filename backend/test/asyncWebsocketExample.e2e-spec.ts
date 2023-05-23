@@ -7,6 +7,7 @@ import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { AppModule } from '../src/app.module';
 import * as WebSocket from 'ws';
+import { WinLoseState } from '../src/minesweeper/gameState';
 
 // [TypeScript Promise - Scaler Topics](https://www.scaler.com/topics/typescript/typescript-promise/)
 describe.skip('Asynchronous WebSocket Code', () => {
@@ -96,5 +97,16 @@ describe.skip('Asynchronous WebSocket Code', () => {
     ping();
     const event = await onWsMessage();
     expect(event.event).toBe('pong');
+  });
+
+  // 基本遊戲狀態
+  it('when game start then gameState should be NONE', async () => {
+    await onWsOpen();
+    ping();
+    let event = await onWsMessage();
+    expect(event.event).toBe('pong');
+    gameInfo();
+    event = await onWsMessage();
+    expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
   });
 });
