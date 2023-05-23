@@ -105,8 +105,7 @@ describe('WebSocket Gateway', () => {
   // 基本遊戲狀態
   it('when game start then gameState should be NONE', (done) => {
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo();
     });
 
     ws.on('message', (message) => {
@@ -114,9 +113,6 @@ describe('WebSocket Gateway', () => {
       // expect(event.event).toBe("gameInfo");
 
       switch (event.event) {
-        case 'pong':
-          gameInfo();
-          break;
         case 'gameInfo':
           expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
           done();
@@ -129,8 +125,7 @@ describe('WebSocket Gateway', () => {
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置還沒踩過且沒有插旗', (done) => {
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo();
     });
 
     let gameInfoCount = 0;
@@ -138,9 +133,6 @@ describe('WebSocket Gateway', () => {
       const event = JSON.parse(message.toString());
 
       switch (event.event) {
-        case 'pong':
-          gameInfo();
-          break;
         case 'gameInfo':
           gameInfoCount++;
           switch (gameInfoCount) {
@@ -174,8 +166,7 @@ describe('WebSocket Gateway', () => {
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被踩過', (done) => {
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo();
     });
 
     let gameInfoCount = 0;
@@ -183,9 +174,6 @@ describe('WebSocket Gateway', () => {
       const event = JSON.parse(message.toString());
 
       switch (event.event) {
-        case 'pong':
-          gameInfo();
-          break;
         case 'gameInfo':
           gameInfoCount++;
           switch (gameInfoCount) {
@@ -220,8 +208,7 @@ describe('WebSocket Gateway', () => {
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被插旗', (done) => {
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo();
     });
 
     let gameInfoCount = 0;
@@ -229,9 +216,6 @@ describe('WebSocket Gateway', () => {
       const event = JSON.parse(message.toString());
 
       switch (event.event) {
-        case 'pong':
-          gameInfo();
-          break;
         case 'gameInfo':
           gameInfoCount++;
           switch (gameInfoCount) {
@@ -275,6 +259,9 @@ describe('WebSocket Gateway', () => {
     return cells;
   };
 
+  /**
+   * 3 x 3，只有 1 個地雷，要自己設定地雷位置
+   */
   const initData = (): MinesweeperData => {
     const levelConfig = {
       size: {
@@ -314,8 +301,7 @@ describe('WebSocket Gateway', () => {
     wsGateway.minesweeperRepository.save(domain);
 
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo(domain.gameId);
     });
 
     let gameInfoCount = 0;
@@ -323,9 +309,6 @@ describe('WebSocket Gateway', () => {
       const event = JSON.parse(message.toString());
 
       switch (event.event) {
-        case 'pong':
-          gameInfo(domain.gameId);
-          break;
         case 'gameInfo':
           gameInfoCount++;
           switch (gameInfoCount) {
@@ -363,8 +346,7 @@ describe('WebSocket Gateway', () => {
     wsGateway.minesweeperRepository.save(domain);
 
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo(domain.gameId);
     });
 
     let gameInfoCount = 0;
@@ -372,9 +354,6 @@ describe('WebSocket Gateway', () => {
       const event = JSON.parse(message.toString());
 
       switch (event.event) {
-        case 'pong':
-          gameInfo(domain.gameId);
-          break;
         case 'gameInfo':
           gameInfoCount++;
           switch (gameInfoCount) {
@@ -410,8 +389,7 @@ describe('WebSocket Gateway', () => {
     wsGateway.minesweeperRepository.save(domain);
 
     ws.on('open', () => {
-      const data = JSON.stringify({ event: 'ping', data: {} });
-      ws.send(data);
+      gameInfo(domain.gameId);
     });
 
     let gameInfoCount = 0;
@@ -419,9 +397,6 @@ describe('WebSocket Gateway', () => {
       const event = JSON.parse(message.toString());
 
       switch (event.event) {
-        case 'pong':
-          gameInfo(domain.gameId);
-          break;
         case 'gameInfo':
           gameInfoCount++;
           switch (gameInfoCount) {
