@@ -11,10 +11,10 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.userService.findOne(username);
+    const user = await this.userService.user({ account: username });
     // console.log(`user: ${JSON.stringify(user)}`);
 
-    if (user === undefined) {
+    if (user === null) {
       return null;
     }
 

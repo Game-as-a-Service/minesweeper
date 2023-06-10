@@ -1,45 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user';
-import { hash } from '../common/bcryptHelper';
-
+import { PrismaService } from '../common/services/prisma.service';
+import { User, Prisma } from '@prisma/client';
 @Injectable()
 export class UserService {
-  private readonly userList: User[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  async create(newUser: User) {
-    if (
-      newUser.account === undefined ||
-      newUser.account === '' ||
-      newUser.password === undefined ||
-      newUser.password === ''
-    ) {
-      return 'input error';
-    }
-
-    for (const user of this.userList) {
-      if (user.account === newUser.account) {
-        return 'user exist';
-      }
-    }
-
-    newUser.password = await hash(newUser.password);
-
-    this.userList.push(newUser);
-
-    return 'ok';
+  async user(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  ): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: userWhereUniqueInput,
+    });
   }
 
-  findAll(): User[] {
-    return this.userList;
+  async users(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+  }): Promise<User[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.user.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
-  findOne(account: string): User | undefined {
-    for (const user of this.userList) {
-      if (user.account === account) {
-        return user;
-      }
-    }
-
-    return undefined;
+  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({
+      data,
+    });
   }
 }

@@ -1,9 +1,10 @@
 {
   "scripts": {
-    "commit": "cz",
     "dev": "yarn docker:up",
+    "down": "yarn docker:down",
     "docker:up": "docker-compose -f docker-compose.local.yml up",
-    "docker:down": "docker-compose -f docker-compose.local.yml down"
+    "docker:down": "docker-compose -f docker-compose.local.yml down",
+    "commit": "cz"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.1.8",
