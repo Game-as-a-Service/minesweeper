@@ -1,9 +1,20 @@
 version: "3.7"
 
 services:
+  postgres:
+    image: postgres:15.3-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "127.0.0.1:5432:5432"
+    env_file:
+      - ./.env.prod.db
   backend:
     image: "ghcr.io/game-as-a-service/minesweeper/backend:main"
     restart: unless-stopped
+    depends_on:
+      - postgres
     networks:
       - default
   frontend:
@@ -20,3 +31,5 @@ services:
 networks:
   default:
     name: minesweeper-network
+volumes:
+  postgres_data:
