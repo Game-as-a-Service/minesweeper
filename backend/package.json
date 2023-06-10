@@ -24,7 +24,11 @@
     "db:start": "docker run -d --name postgres-for-e2e --restart=always -e POSTGRES_DB=minesweeper -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:15.3-alpine",
     "db:stop": "docker rm -f postgres-for-e2e",
     "env:dev": "rm -f .env ; cp .env.local .env",
-    "env:test": "rm -f .env ; cp .env.test .env"
+    "env:test": "rm -f .env ; cp .env.test .env",
+    "migrate": "yarn prisma migrate dev --name",
+    "generate": "yarn prisma generate",
+    "deploy": "yarn prisma migrate deploy",
+    "prod": "yarn deploy && yarn start:prod"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
