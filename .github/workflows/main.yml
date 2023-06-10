@@ -35,6 +35,8 @@ jobs:
           cd ${{ matrix.subdir }}
           yarn
       - name: Run test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           cd ${{ matrix.subdir }}
           yarn test
