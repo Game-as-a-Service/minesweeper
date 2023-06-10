@@ -23,6 +23,7 @@ jobs:
           yarn lint-check
   test:
     runs-on: ubuntu-latest
+    container: node:18.16.0-alpine
     strategy:
       fail-fast: false
       matrix:
@@ -33,7 +34,7 @@ jobs:
       - name: Install package
         run: |
           cd ${{ matrix.subdir }}
-          yarn install --frozen-lockfile && yarn prisma generate && yarn build
+          yarn
       - name: Run test
         run: |
           cd ${{ matrix.subdir }}
