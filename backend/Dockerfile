@@ -7,7 +7,7 @@ RUN yarn install --frozen-lockfile && yarn prisma generate && yarn build
 
 # ---
 
-FROM node:16.13.1-alpine
+FROM node:18.16.0-alpine
 
 ENV NODE_ENV production
 
