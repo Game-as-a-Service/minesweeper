@@ -3,7 +3,7 @@ FROM node:18.16.0-alpine as builder
 WORKDIR /app
 COPY . /app
 
-RUN yarn install --frozen-lockfile && yarn build
+RUN yarn install --frozen-lockfile && yarn prisma generate && yarn build
 
 # ---
 
@@ -21,6 +21,8 @@ COPY package.json yarn.lock ./
 RUN yarn install --production --frozen-lockfile
 
 COPY --from=builder /app/dist/ /app/dist/
+COPY --from=builder /app/prisma/ /app/prisma/
+COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
 
 EXPOSE 3000
 
