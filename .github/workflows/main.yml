@@ -33,7 +33,7 @@ jobs:
       - name: Install package
         run: |
           cd ${{ matrix.subdir }}
-          yarn
+          yarn install --frozen-lockfile && yarn prisma generate && yarn build
       - name: Run test
         run: |
           cd ${{ matrix.subdir }}
