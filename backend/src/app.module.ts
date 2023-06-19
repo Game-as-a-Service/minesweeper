@@ -10,6 +10,8 @@ import { jwtConstants } from './auth/constants';
 import { PrismaService } from './common/services/prisma.service';
 import { DataServicesModule } from './data-services/data-services.module';
 import { DataServices } from './data-services/data-services.service';
+import { UseCaseModule } from './use-case/use-case.module';
+import { UseCaseService } from './use-case/use-case.service';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
 
@@ -25,8 +27,15 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
       signOptions: { expiresIn: jwtConstants.expiresIn },
     }),
     DataServicesModule,
+    UseCaseModule,
   ],
   controllers: [AppController],
-  providers: [AppService, WsGateway, PrismaService, DataServices],
+  providers: [
+    AppService,
+    WsGateway,
+    PrismaService,
+    DataServices,
+    UseCaseService,
+  ],
 })
 export class AppModule {}

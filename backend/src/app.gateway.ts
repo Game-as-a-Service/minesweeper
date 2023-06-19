@@ -8,6 +8,7 @@ import { Server } from 'ws';
 import { Minesweeper } from './minesweeper/minesweeper';
 import { OnApplicationShutdown } from '@nestjs/common';
 import { DataServices } from './data-services/data-services.service';
+import { UseCaseService } from './use-case/use-case.service';
 
 @WebSocketGateway()
 export class WsGateway implements OnApplicationShutdown {
@@ -16,7 +17,10 @@ export class WsGateway implements OnApplicationShutdown {
   clientList: any[];
   isAliveTimer: NodeJS.Timer = undefined;
 
-  constructor(private readonly dataServices: DataServices) {
+  constructor(
+    private readonly dataServices: DataServices,
+    private readonly useCaseService: UseCaseService,
+  ) {
     this.clientList = [];
 
     this.isAliveTimer = setInterval(() => {
@@ -61,7 +65,11 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('open')
   async onOpen(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    await this.dataServices.openUseCase.execute(input.gameId, input.x, input.y);
+    await this.useCaseService.openUseCase.execute(
+      input.gameId,
+      input.x,
+      input.y,
+    );
 
     return this.gameInfo(input.gameId);
   }
@@ -70,7 +78,11 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('flag')
   async onFlag(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    await this.dataServices.flagUseCase.execute(input.gameId, input.x, input.y);
+    await this.useCaseService.flagUseCase.execute(
+      input.gameId,
+      input.x,
+      input.y,
+    );
 
     return this.gameInfo(input.gameId);
   }
@@ -79,7 +91,7 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('chording')
   async onChording(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    await this.dataServices.chordingUseCase.execute(
+    await this.useCaseService.chordingUseCase.execute(
       input.gameId,
       input.x,
       input.y,
@@ -92,14 +104,14 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('start')
   async onStart(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    const gameId = await this.dataServices.startUseCase.execute(input.level);
+    const gameId = await this.useCaseService.startUseCase.execute(input.level);
 
     return this.gameInfo(gameId);
   }
 
   async gameInfo(gameId: string) {
     if (gameId === undefined || gameId === null) {
-      gameId = await this.dataServices.startUseCase.execute();
+      gameId = await this.useCaseService.startUseCase.execute();
     }
 
     const game: Minesweeper =
