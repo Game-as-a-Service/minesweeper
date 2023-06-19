@@ -41,6 +41,8 @@ jobs:
           yarn test
   build:
     needs: [lint, test]
+    permissions:
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
