@@ -1,7 +1,6 @@
 name: Main
 on:
   push:
-    branches: [ "main" ]
   workflow_dispatch:
 jobs:
   lint:
@@ -42,6 +41,10 @@ jobs:
           yarn test
   build:
     needs: [lint, test]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
