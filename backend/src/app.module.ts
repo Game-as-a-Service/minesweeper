@@ -8,6 +8,8 @@ import { UserModule } from './user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { PrismaService } from './common/services/prisma.service';
+import { DataServicesModule } from './data-services/data-services.module';
+import { DataServices } from './data-services/data-services.service';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
 
@@ -22,8 +24,9 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: jwtConstants.expiresIn },
     }),
+    DataServicesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, WsGateway, PrismaService],
+  providers: [AppService, WsGateway, PrismaService, DataServices],
 })
 export class AppModule {}

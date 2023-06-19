@@ -9,14 +9,13 @@ import { randomUUID } from 'crypto';
 import { MinesweeperData } from '../src/data-services/data/minesweeper.data';
 import { LevelConfig } from '../src/minesweeper/levelConfig';
 import { Minesweeper } from '../src/minesweeper/minesweeper';
-import { WsGateway } from '../src/app.gateway';
+import { DataServices } from '../src/data-services/data-services.service';
 
 describe('WebSocket Gateway', () => {
   let app: INestApplication;
   let ws: WebSocket;
 
-  // TODO 之後要把 Repository 移到其它地方
-  let wsGateway: WsGateway;
+  let dataServices: DataServices;
 
   // beforeAll((done) => {
   //   NestFactory.create(AppModule).then((a) => {
@@ -31,7 +30,7 @@ describe('WebSocket Gateway', () => {
     app.useWebSocketAdapter(new WsAdapter(app));
     app.enableShutdownHooks();
 
-    wsGateway = app.get(WsGateway);
+    dataServices = app.get(DataServices);
 
     await app.listen(3000);
   });
@@ -305,8 +304,9 @@ describe('WebSocket Gateway', () => {
     // 在 0, 0 放地雷
     data.board.cells[0][0].mine = true;
 
-    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository
+    const domain: Minesweeper =
+      dataServices.minesweeperDataModel.toDomain(data);
+    dataServices.minesweeperRepository
       .save(domain)
       .then(() => {
         ws = new WebSocket('ws://localhost:3000');
@@ -357,8 +357,9 @@ describe('WebSocket Gateway', () => {
     data.board.cells[0][1].mine = true;
     data.board.cells[0][0].number = 1;
 
-    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository
+    const domain: Minesweeper =
+      dataServices.minesweeperDataModel.toDomain(data);
+    dataServices.minesweeperRepository
       .save(domain)
       .then(() => {
         ws = new WebSocket('ws://localhost:3000');
@@ -407,8 +408,9 @@ describe('WebSocket Gateway', () => {
     // 在 2, 2 放地雷
     data.board.cells[2][2].mine = true;
 
-    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository
+    const domain: Minesweeper =
+      dataServices.minesweeperDataModel.toDomain(data);
+    dataServices.minesweeperRepository
       .save(domain)
       .then(() => {
         ws = new WebSocket('ws://localhost:3000');

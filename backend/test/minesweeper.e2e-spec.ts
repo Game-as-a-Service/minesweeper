@@ -9,26 +9,25 @@ import { AppModule } from '../src/app.module';
 import * as WebSocket from 'ws';
 import { WinLoseState } from '../src/minesweeper/gameState';
 import { Cell, CellState } from '../src/minesweeper/cell';
-import { WsGateway } from '../src/app.gateway';
 import { Minesweeper } from '../src/minesweeper/minesweeper';
 import { randomUUID } from 'crypto';
 import { MinesweeperData } from '../src/data-services/data/minesweeper.data';
 import { LevelConfig } from '../src/minesweeper/levelConfig';
+import { DataServices } from '../src/data-services/data-services.service';
 
 // [TypeScript Promise - Scaler Topics](https://www.scaler.com/topics/typescript/typescript-promise/)
 describe('Asynchronous WebSocket Code', () => {
   let app: INestApplication;
   let ws: WebSocket;
 
-  // TODO 之後要把 Repository 移到其它地方
-  let wsGateway: WsGateway;
+  let dataServices: DataServices;
 
   beforeAll(async () => {
     app = await NestFactory.create(AppModule);
     app.useWebSocketAdapter(new WsAdapter(app));
     app.enableShutdownHooks();
 
-    wsGateway = app.get(WsGateway);
+    dataServices = app.get(DataServices);
 
     await app.listen(3000);
   });
@@ -234,8 +233,9 @@ describe('Asynchronous WebSocket Code', () => {
     // 在 0, 0 放地雷
     data.board.cells[0][0].mine = true;
 
-    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    await wsGateway.minesweeperRepository.save(domain);
+    const domain: Minesweeper =
+      dataServices.minesweeperDataModel.toDomain(data);
+    await dataServices.minesweeperRepository.save(domain);
 
     await onWsOpen();
     gameInfo(domain.gameId);
@@ -261,8 +261,9 @@ describe('Asynchronous WebSocket Code', () => {
     data.board.cells[0][1].mine = true;
     data.board.cells[0][0].number = 1;
 
-    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    await wsGateway.minesweeperRepository.save(domain);
+    const domain: Minesweeper =
+      dataServices.minesweeperDataModel.toDomain(data);
+    await dataServices.minesweeperRepository.save(domain);
 
     await onWsOpen();
     gameInfo(domain.gameId);
@@ -285,8 +286,9 @@ describe('Asynchronous WebSocket Code', () => {
     // 在 2, 2 放地雷
     data.board.cells[2][2].mine = true;
 
-    const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    await wsGateway.minesweeperRepository.save(domain);
+    const domain: Minesweeper =
+      dataServices.minesweeperDataModel.toDomain(data);
+    await dataServices.minesweeperRepository.save(domain);
 
     await onWsOpen();
     gameInfo(domain.gameId);
