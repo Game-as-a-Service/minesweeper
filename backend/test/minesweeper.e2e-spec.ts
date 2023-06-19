@@ -37,9 +37,7 @@ describe('Asynchronous WebSocket Code', () => {
     await app.close();
   });
 
-  beforeEach(() => {
-    ws = new WebSocket('ws://localhost:3000');
-  });
+  // beforeEach(() => {});
 
   afterEach((done) => {
     if (ws.readyState === WebSocket.OPEN) {
@@ -87,6 +85,8 @@ describe('Asynchronous WebSocket Code', () => {
   };
 
   const onWsOpen = () => {
+    ws = new WebSocket('ws://localhost:3000');
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return new Promise<void>(function (resolve, reject) {
       ws.on('open', () => {
@@ -235,7 +235,7 @@ describe('Asynchronous WebSocket Code', () => {
     data.board.cells[0][0].mine = true;
 
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository.save(domain);
+    await wsGateway.minesweeperRepository.save(domain);
 
     await onWsOpen();
     gameInfo(domain.gameId);
@@ -262,7 +262,7 @@ describe('Asynchronous WebSocket Code', () => {
     data.board.cells[0][0].number = 1;
 
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository.save(domain);
+    await wsGateway.minesweeperRepository.save(domain);
 
     await onWsOpen();
     gameInfo(domain.gameId);
@@ -286,7 +286,7 @@ describe('Asynchronous WebSocket Code', () => {
     data.board.cells[2][2].mine = true;
 
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository.save(domain);
+    await wsGateway.minesweeperRepository.save(domain);
 
     await onWsOpen();
     gameInfo(domain.gameId);

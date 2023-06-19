@@ -8,14 +8,17 @@ import { Server } from 'ws';
 import { AppService } from './app.service';
 import { Minesweeper } from './minesweeper/minesweeper';
 import { OnApplicationShutdown } from '@nestjs/common';
-
-import MinesweeperDao from './data-services/dao/minesweeper.dao';
 import MinesweeperDataModel from './data-services/data-model/minesweeper.data-model';
 import { MinesweeperRepository } from './data-services/minesweeper-repository';
 import { StartUseCase } from './use-case/startUseCase';
 import { OpenUseCase } from './use-case/openUseCase';
 import { FlagUseCase } from './use-case/flagUseCase';
 import { ChordingUseCase } from './use-case/chordingUseCase';
+import MinesweeperMemoryDao from './data-services/dao/minesweeper-memory.dao';
+import MinesweeperPostgresqlDao from './data-services/dao/minesweeper-postgresql.dao';
+import { PrismaService } from './common/services/prisma.service';
+import { Dao } from './data-services/dao/dao';
+import { MinesweeperData } from './data-services/data/minesweeper.data';
 
 @WebSocketGateway()
 export class WsGateway implements OnApplicationShutdown {
@@ -24,22 +27,32 @@ export class WsGateway implements OnApplicationShutdown {
   clientList: any[];
   isAliveTimer: NodeJS.Timer = undefined;
 
+  minesweeperDao: Dao<MinesweeperData>;
+  minesweeperDataModel: MinesweeperDataModel;
+  minesweeperRepository: MinesweeperRepository;
+
   // TODO Use Case 暫時放這邊
-  minesweeperDao = new MinesweeperDao();
-  minesweeperDataModel = new MinesweeperDataModel();
-  minesweeperRepository = new MinesweeperRepository(
-    this.minesweeperDao,
-    this.minesweeperDataModel,
-  );
+  startUseCase: StartUseCase;
+  openUseCase: OpenUseCase;
+  flagUseCase: FlagUseCase;
+  chordingUseCase: ChordingUseCase;
 
-  startUseCase: StartUseCase = new StartUseCase(this.minesweeperRepository);
-  openUseCase: OpenUseCase = new OpenUseCase(this.minesweeperRepository);
-  flagUseCase: FlagUseCase = new FlagUseCase(this.minesweeperRepository);
-  chordingUseCase: ChordingUseCase = new ChordingUseCase(
-    this.minesweeperRepository,
-  );
+  constructor(
+    private readonly appService: AppService,
+    private prisma: PrismaService,
+  ) {
+    // this.minesweeperDao = new MinesweeperMemoryDao();
+    this.minesweeperDao = new MinesweeperPostgresqlDao(prisma);
+    this.minesweeperDataModel = new MinesweeperDataModel();
+    this.minesweeperRepository = new MinesweeperRepository(
+      this.minesweeperDao,
+      this.minesweeperDataModel,
+    );
+    this.startUseCase = new StartUseCase(this.minesweeperRepository);
+    this.openUseCase = new OpenUseCase(this.minesweeperRepository);
+    this.flagUseCase = new FlagUseCase(this.minesweeperRepository);
+    this.chordingUseCase = new ChordingUseCase(this.minesweeperRepository);
 
-  constructor(private readonly appService: AppService) {
     this.clientList = [];
 
     this.isAliveTimer = setInterval(() => {
@@ -84,7 +97,7 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('open')
   async onOpen(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    this.openUseCase.execute(input.gameId, input.x, input.y);
+    await this.openUseCase.execute(input.gameId, input.x, input.y);
 
     return this.gameInfo(input.gameId);
   }
@@ -93,7 +106,7 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('flag')
   async onFlag(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    this.flagUseCase.execute(input.gameId, input.x, input.y);
+    await this.flagUseCase.execute(input.gameId, input.x, input.y);
 
     return this.gameInfo(input.gameId);
   }
@@ -102,7 +115,7 @@ export class WsGateway implements OnApplicationShutdown {
   @SubscribeMessage('chording')
   async onChording(client: any, data: string): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
-    this.chordingUseCase.execute(input.gameId, input.x, input.y);
+    await this.chordingUseCase.execute(input.gameId, input.x, input.y);
 
     return this.gameInfo(input.gameId);
   }

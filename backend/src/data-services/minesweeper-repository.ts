@@ -1,12 +1,12 @@
 import { Minesweeper } from '../minesweeper/minesweeper';
 import IRepository from '../use-case/repository.interface';
-import MinesweeperDao from './dao/minesweeper.dao';
+import { Dao } from './dao/dao';
 import MinesweeperDataModel from './data-model/minesweeper.data-model';
 import { MinesweeperData } from './data/minesweeper.data';
 
 export class MinesweeperRepository implements IRepository<Minesweeper> {
   constructor(
-    private _dao: MinesweeperDao,
+    private _dao: Dao<MinesweeperData>,
     private _dataModel: MinesweeperDataModel,
   ) {}
 

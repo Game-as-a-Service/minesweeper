@@ -1,7 +1,7 @@
 import { MinesweeperData } from '../data/minesweeper.data';
 import { Dao } from './dao';
 
-export default class MinesweeperDao implements Dao<MinesweeperData> {
+export default class MinesweeperMemoryDao implements Dao<MinesweeperData> {
   gameMap: Map<string, MinesweeperData> = new Map();
 
   async findById(id: string): Promise<MinesweeperData> {

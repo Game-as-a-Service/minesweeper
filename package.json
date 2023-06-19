@@ -3,6 +3,7 @@
     "dev": "yarn docker:up",
     "down": "yarn docker:down",
     "docker:up": "docker-compose -f docker-compose.local.yml up",
+    "docker:up:postgres": "docker-compose -f docker-compose.local.yml up postgres",
     "docker:down": "docker-compose -f docker-compose.local.yml down",
     "commit": "cz"
   },

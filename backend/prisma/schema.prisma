@@ -16,3 +16,8 @@ model User {
   account   String  @unique
   password  String
 }
+
+model Game {
+  id        String  @id
+  data      Json
+}

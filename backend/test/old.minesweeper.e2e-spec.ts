@@ -40,9 +40,7 @@ describe('WebSocket Gateway', () => {
     await app.close();
   });
 
-  beforeEach(() => {
-    ws = new WebSocket('ws://localhost:3000');
-  });
+  // beforeEach(() => {});
 
   afterEach((done) => {
     if (ws.readyState === WebSocket.OPEN) {
@@ -91,6 +89,8 @@ describe('WebSocket Gateway', () => {
 
   // 基本 websocket ping pong
   it('ping pong', (done) => {
+    ws = new WebSocket('ws://localhost:3000');
+
     ws.on('open', () => {
       ping();
     });
@@ -104,6 +104,8 @@ describe('WebSocket Gateway', () => {
 
   // 基本遊戲狀態
   it('when game start then gameState should be NONE', (done) => {
+    ws = new WebSocket('ws://localhost:3000');
+
     ws.on('open', () => {
       gameInfo();
     });
@@ -124,6 +126,8 @@ describe('WebSocket Gateway', () => {
   });
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置還沒踩過且沒有插旗', (done) => {
+    ws = new WebSocket('ws://localhost:3000');
+
     ws.on('open', () => {
       gameInfo();
     });
@@ -165,6 +169,8 @@ describe('WebSocket Gateway', () => {
   });
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被踩過', (done) => {
+    ws = new WebSocket('ws://localhost:3000');
+
     ws.on('open', () => {
       gameInfo();
     });
@@ -207,6 +213,8 @@ describe('WebSocket Gateway', () => {
   });
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被插旗', (done) => {
+    ws = new WebSocket('ws://localhost:3000');
+
     ws.on('open', () => {
       gameInfo();
     });
@@ -298,40 +306,47 @@ describe('WebSocket Gateway', () => {
     data.board.cells[0][0].mine = true;
 
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository.save(domain);
+    wsGateway.minesweeperRepository
+      .save(domain)
+      .then(() => {
+        ws = new WebSocket('ws://localhost:3000');
 
-    ws.on('open', () => {
-      gameInfo(domain.gameId);
-    });
+        ws.on('open', () => {
+          gameInfo(domain.gameId);
+        });
 
-    let gameInfoCount = 0;
-    ws.on('message', (message) => {
-      const event = JSON.parse(message.toString());
+        let gameInfoCount = 0;
+        ws.on('message', (message) => {
+          const event = JSON.parse(message.toString());
 
-      switch (event.event) {
-        case 'gameInfo':
-          gameInfoCount++;
-          switch (gameInfoCount) {
-            case 1:
-              expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
-              // When
-              // 玩家踩地雷
-              open(event.data.gameId, 0, 0);
-              break;
-            case 2:
-              // Then
-              // 遊戲結束
-              expect(event.data.gameState.winLose).toBe(WinLoseState.LOSE);
-              done();
+          switch (event.event) {
+            case 'gameInfo':
+              gameInfoCount++;
+              switch (gameInfoCount) {
+                case 1:
+                  expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
+                  // When
+                  // 玩家踩地雷
+                  open(event.data.gameId, 0, 0);
+                  break;
+                case 2:
+                  // Then
+                  // 遊戲結束
+                  expect(event.data.gameState.winLose).toBe(WinLoseState.LOSE);
+                  done();
+                  break;
+                default:
+                  throw new Error(`unhandled case`);
+              }
               break;
             default:
               throw new Error(`unhandled case`);
           }
-          break;
-        default:
-          throw new Error(`unhandled case`);
-      }
-    });
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   });
 
   it('沒踩到地雷會知道附近有多少地雷', (done) => {
@@ -343,39 +358,46 @@ describe('WebSocket Gateway', () => {
     data.board.cells[0][0].number = 1;
 
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository.save(domain);
+    wsGateway.minesweeperRepository
+      .save(domain)
+      .then(() => {
+        ws = new WebSocket('ws://localhost:3000');
 
-    ws.on('open', () => {
-      gameInfo(domain.gameId);
-    });
+        ws.on('open', () => {
+          gameInfo(domain.gameId);
+        });
 
-    let gameInfoCount = 0;
-    ws.on('message', (message) => {
-      const event = JSON.parse(message.toString());
+        let gameInfoCount = 0;
+        ws.on('message', (message) => {
+          const event = JSON.parse(message.toString());
 
-      switch (event.event) {
-        case 'gameInfo':
-          gameInfoCount++;
-          switch (gameInfoCount) {
-            case 1:
-              // When
-              // 玩家踩地雷
-              open(event.data.gameId, 0, 0);
-              break;
-            case 2:
-              // Then
-              // 遊戲結束
-              expect(event.data.cells[0][0].number).toBe(1);
-              done();
+          switch (event.event) {
+            case 'gameInfo':
+              gameInfoCount++;
+              switch (gameInfoCount) {
+                case 1:
+                  // When
+                  // 玩家踩地雷
+                  open(event.data.gameId, 0, 0);
+                  break;
+                case 2:
+                  // Then
+                  // 遊戲結束
+                  expect(event.data.cells[0][0].number).toBe(1);
+                  done();
+                  break;
+                default:
+                  throw new Error(`unhandled case`);
+              }
               break;
             default:
               throw new Error(`unhandled case`);
           }
-          break;
-        default:
-          throw new Error(`unhandled case`);
-      }
-    });
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   });
 
   it('沒踩到地雷且附近也沒有地雷，自動踩附近的所有位置', (done) => {
@@ -386,46 +408,55 @@ describe('WebSocket Gateway', () => {
     data.board.cells[2][2].mine = true;
 
     const domain: Minesweeper = wsGateway.minesweeperDataModel.toDomain(data);
-    wsGateway.minesweeperRepository.save(domain);
+    wsGateway.minesweeperRepository
+      .save(domain)
+      .then(() => {
+        ws = new WebSocket('ws://localhost:3000');
 
-    ws.on('open', () => {
-      gameInfo(domain.gameId);
-    });
+        ws.on('open', () => {
+          gameInfo(domain.gameId);
+        });
 
-    let gameInfoCount = 0;
-    ws.on('message', (message) => {
-      const event = JSON.parse(message.toString());
+        let gameInfoCount = 0;
+        ws.on('message', (message) => {
+          const event = JSON.parse(message.toString());
 
-      switch (event.event) {
-        case 'gameInfo':
-          gameInfoCount++;
-          switch (gameInfoCount) {
-            case 1:
-              expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
-              expect(event.data.cells[0][1].state).toBe(CellState.UNOPENED);
-              // When
-              // 玩家踩地雷
-              open(event.data.gameId, 0, 0);
-              break;
-            case 2:
-              // Then
-              // 自動踩附近的所有位置
-              for (let y = 0; y < data.levelConfig.size.y; y++) {
-                for (let x = 0; x < data.levelConfig.size.x; x++) {
-                  if (x !== 2 && y !== 2) {
-                    expect(event.data.cells[y][x].state).toBe(CellState.OPENED);
+          switch (event.event) {
+            case 'gameInfo':
+              gameInfoCount++;
+              switch (gameInfoCount) {
+                case 1:
+                  expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
+                  expect(event.data.cells[0][1].state).toBe(CellState.UNOPENED);
+                  // When
+                  // 玩家踩地雷
+                  open(event.data.gameId, 0, 0);
+                  break;
+                case 2:
+                  // Then
+                  // 自動踩附近的所有位置
+                  for (let y = 0; y < data.levelConfig.size.y; y++) {
+                    for (let x = 0; x < data.levelConfig.size.x; x++) {
+                      if (x !== 2 && y !== 2) {
+                        expect(event.data.cells[y][x].state).toBe(
+                          CellState.OPENED,
+                        );
+                      }
+                    }
                   }
-                }
+                  done();
+                  break;
+                default:
+                  throw new Error(`unhandled case`);
               }
-              done();
               break;
             default:
               throw new Error(`unhandled case`);
           }
-          break;
-        default:
-          throw new Error(`unhandled case`);
-      }
-    });
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   });
 });

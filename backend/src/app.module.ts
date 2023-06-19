@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
+import { PrismaService } from './common/services/prisma.service';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
 
@@ -23,6 +24,6 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, WsGateway],
+  providers: [AppService, WsGateway, PrismaService],
 })
 export class AppModule {}
