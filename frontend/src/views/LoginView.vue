@@ -2,6 +2,7 @@
 import { reactive } from "vue";
 import * as apiUser from "@/api/user";
 import { useUserStore } from "@/stores/user";
+import router from "@/router";
 
 interface ViewModel {
   user: {
@@ -37,6 +38,7 @@ async function login() {
       store.user.account = vm.user.account;
       store.user.token = token;
       vm.message = "login ok";
+      router.push({ name: "game" });
     }
   } catch (err: any) {
     vm.message = err.message;

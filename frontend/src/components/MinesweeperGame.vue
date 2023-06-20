@@ -3,7 +3,9 @@
 import { Cell, CellState } from "@/minesweeper/cell";
 import { GameState, WinLoseState } from "@/minesweeper/gameState";
 import { Level } from "@/minesweeper/level";
-import { ref } from "vue";
+import router from "@/router";
+import { useUserStore } from "@/stores/user";
+import { onUnmounted, ref } from "vue";
 
 const urlHost = location.host.split(":")[0];
 const port = 3000;
@@ -20,6 +22,13 @@ const level = ref(Level.BEGINNER);
 const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>();
+const store = useUserStore();
+let reConnection = true;
+
+onUnmounted(() => {
+  reConnection = false;
+  socket.close();
+});
 
 const changeLevel = function (newLevel: Level) {
   level.value = newLevel;
@@ -98,7 +107,7 @@ const connect = () => {
       socket.send(JSON.stringify({ event: "ping", data }));
     }, 1000 * 1);
 
-    sendData("gameInfo", {});
+    sendData("login", { token: store.user.token });
   };
 
   socket.onmessage = function (data) {
@@ -111,6 +120,14 @@ const connect = () => {
         isAlive = true;
         // console.log(json.data.timestamp);
         ping.value = Date.now() - json.data.timestamp;
+        break;
+      case "login_ack":
+        sendData("gameInfo", {});
+        break;
+      case "auth_fail":
+        socket.close();
+        store.logout();
+        router.push({ name: "login" });
         break;
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
@@ -126,7 +143,9 @@ const connect = () => {
 
   socket.onclose = function () {
     clearInterval(interval);
-    setTimeout(connect, 1000);
+    if (reConnection) {
+      setTimeout(connect, 1000);
+    }
   };
 
   socket.onerror = function (error) {

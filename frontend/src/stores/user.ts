@@ -1,4 +1,4 @@
-import { ref, type Ref } from "vue";
+import { reactive, ref, type Ref } from "vue";
 import { defineStore } from "pinia";
 
 interface User {
@@ -7,10 +7,17 @@ interface User {
 }
 
 export const useUserStore = defineStore("user", () => {
-  const user: Ref<User> = ref({
+  const user: User = reactive({
     account: "",
     token: "",
   });
 
-  return { user };
+  function logout() {
+    localStorage.setItem("account", "");
+    localStorage.setItem("token", "");
+    user.account = "";
+    user.token = "";
+  }
+
+  return { user, logout };
 });

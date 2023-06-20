@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import { useUserStore } from "./stores/user";
+import router from "./router";
 // import HelloWorld from "./components/HelloWorld.vue";
 
 const store = useUserStore();
@@ -15,6 +16,11 @@ onMounted(() => {
     store.user.token = token;
   }
 });
+
+function logout() {
+  store.logout();
+  router.push({ name: "login" });
+}
 </script>
 
 <template>
@@ -38,6 +44,7 @@ onMounted(() => {
           <RouterLink to="/login">Login</RouterLink>
           <RouterLink to="/signup">Signup</RouterLink>
         </div>
+        <div v-else><a @click="logout">Logout</a></div>
       </nav>
     </div>
   </header>
@@ -68,6 +75,7 @@ header {
 
 nav {
   width: 100%;
+  height: 200px;
   font-size: 12px;
   text-align: center;
   margin-top: 2rem;
