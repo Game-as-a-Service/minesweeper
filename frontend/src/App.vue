@@ -1,37 +1,64 @@
 <script setup lang="ts">
-// import { RouterLink, RouterView } from "vue-router";
+import { onMounted } from "vue";
+import { RouterLink, RouterView } from "vue-router";
+import { useUserStore } from "./stores/user";
 // import HelloWorld from "./components/HelloWorld.vue";
-import Minesweeper from "./components/MinesweeperGame.vue";
+
+const store = useUserStore();
+
+onMounted(() => {
+  const account = localStorage.getItem("account");
+  const token = localStorage.getItem("token");
+
+  if (account && token) {
+    store.user.account = account;
+    store.user.token = token;
+  }
+});
 </script>
 
 <template>
-  <!-- <header>
-    <img
+  <header>
+    <!-- <img
       alt="Vue logo"
       class="logo"
       src="@/assets/logo.svg"
       width="125"
       height="125"
-    />
+    /> -->
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <!-- <HelloWorld msg="You did it!" /> -->
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/game">Game</RouterLink>
+        <div v-if="store.user.account === ''">
+          <RouterLink to="/login">Login</RouterLink>
+          <RouterLink to="/signup">Signup</RouterLink>
+        </div>
       </nav>
     </div>
   </header>
+  <div class="router-view">
+    <RouterView />
+  </div>
 
-  <RouterView /> -->
-  <Minesweeper />
+  <!-- <a>登入</a> -->
+
+  <!-- <Minesweeper /> -->
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
   max-height: 100vh;
+  width: 200px;
+}
+
+.router-view {
+  width: 700px;
 }
 
 .logo {
@@ -44,6 +71,8 @@ nav {
   font-size: 12px;
   text-align: center;
   margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 nav a.router-link-exact-active {

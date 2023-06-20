@@ -10,9 +10,14 @@ export class AppController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @UseGuards(AuthGuard('basic'))
   @Get()
   getHello(): string {
+    return this.appService.getHello();
+  }
+
+  @UseGuards(AuthGuard('basic'))
+  @Get('authTest')
+  authTest(): string {
     return this.appService.getHello();
   }
 

@@ -39,7 +39,9 @@ export class UserController {
 
     user.password = await hash(user.password);
 
-    return await this.userService.createUser(user);
+    await this.userService.createUser(user);
+
+    return 'ok';
   }
 
   // @Get()
