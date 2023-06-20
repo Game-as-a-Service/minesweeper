@@ -7,7 +7,7 @@ import { ref } from "vue";
 
 const urlHost = location.host.split(":")[0];
 const port = 3000;
-let server = `wss://minesweeper.snowbellstudio.com:${port}`;
+let server = `wss://minesweeper.snowbellstudio.com/api/`;
 
 // for local dev
 if (urlHost === "localhost" || urlHost === "127.0.0.1") {
