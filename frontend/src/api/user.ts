@@ -18,7 +18,7 @@ const HOST_URL = "api/";
 // }
 
 export async function hello() {
-  return await axios({ method: "get", url: `${HOST_URL}}` });
+  return await axios({ method: "get", url: `${HOST_URL}` });
 }
 
 export async function signup(account: string, password: string) {
