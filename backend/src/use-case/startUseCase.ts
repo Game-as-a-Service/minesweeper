@@ -10,9 +10,10 @@ export class StartUseCase {
 
   private minesweeperRepository: IRepository<Minesweeper>;
 
-  async execute(level: Level = Level.BEGINNER) {
+  async execute(playerId?: number, level: Level = Level.BEGINNER) {
     const game = new Minesweeper();
     game.gameId = randomUUID();
+    game.playerId = playerId;
     game.start(level);
     await this.minesweeperRepository.save(game);
     return game.gameId;

@@ -29,7 +29,7 @@ export class AuthService {
 
   async login(user: any) {
     // console.log(`user: ${JSON.stringify(user)}`);
-    const payload = { account: user.account };
+    const payload = { id: user.id, account: user.account };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

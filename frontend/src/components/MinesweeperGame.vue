@@ -122,7 +122,11 @@ const connect = () => {
         ping.value = Date.now() - json.data.timestamp;
         break;
       case "login_ack":
-        sendData("gameInfo", {});
+        if (localStorage.getItem("gameId")) {
+          sendData("gameInfo", {});
+        } else {
+          start();
+        }
         break;
       case "auth_fail":
         socket.close();

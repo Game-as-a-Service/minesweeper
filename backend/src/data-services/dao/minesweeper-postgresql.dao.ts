@@ -17,8 +17,15 @@ export default class MinesweeperPostgresqlDao implements Dao<MinesweeperData> {
   async save(data: MinesweeperData): Promise<void> {
     await this.prisma.game.upsert({
       where: { id: data.gameId },
-      update: { data: data as unknown as Prisma.JsonObject },
-      create: { id: data.gameId, data: data as unknown as Prisma.JsonObject },
+      update: {
+        data: data as unknown as Prisma.JsonObject,
+        playerId: data.playerId,
+      },
+      create: {
+        id: data.gameId,
+        data: data as unknown as Prisma.JsonObject,
+        playerId: data.playerId,
+      },
     });
   }
 }

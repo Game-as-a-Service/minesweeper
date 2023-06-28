@@ -15,9 +15,14 @@ model User {
   id        Int     @default(autoincrement()) @id
   account   String  @unique
   password  String
+  gameList  Game[]
 }
 
 model Game {
   id        String  @id
   data      Json
+
+  player    User?   @relation(fields: [playerId], references: [id])
+  // nullable: 匿名玩家
+  playerId  Int?
 }

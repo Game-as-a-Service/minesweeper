@@ -9,6 +9,7 @@ export default class MinesweeperDataModel
   toData(domain: Minesweeper): MinesweeperData {
     const data: MinesweeperData = {
       gameId: domain.gameId,
+      playerId: domain.playerId,
       gameState: domain.gameState,
       board: {
         cells: domain.board.cells,

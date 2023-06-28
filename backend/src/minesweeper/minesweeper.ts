@@ -11,6 +11,7 @@ LevelConfigMap.set(Level.EXPERT, new LevelConfig(new Size(30, 16), 99));
 
 export class Minesweeper {
   gameId: string;
+  playerId?: number;
   gameState: GameState;
   board: Board;
   levelConfig: LevelConfig;

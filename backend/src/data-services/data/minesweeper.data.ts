@@ -4,6 +4,7 @@ import { Size } from '../../minesweeper/size';
 
 export type MinesweeperData = {
   gameId: string;
+  playerId: number;
   gameState: GameState;
   board: Board;
   levelConfig: LevelConfig;

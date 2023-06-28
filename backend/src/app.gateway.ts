@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 interface MyWebSocket extends WebSocket {
   extra: {
     isAlive: boolean;
+    id: number;
     account: string;
   };
 }
@@ -49,6 +50,7 @@ export class WsGateway implements OnApplicationShutdown {
 
   async handleConnection(client: MyWebSocket) {
     client.extra = {
+      id: -1,
       isAlive: true,
       account: '',
     };
@@ -69,6 +71,10 @@ export class WsGateway implements OnApplicationShutdown {
   }
 
   checkAuth(client: MyWebSocket) {
+    if (client.extra.id === -1) {
+      return false;
+    }
+
     if (client.extra.account === '') {
       return false;
     }
@@ -76,7 +82,7 @@ export class WsGateway implements OnApplicationShutdown {
     return true;
   }
 
-  // client send: {"event":"login","data":"{token: "abcdef"}"}
+  // client send: {"event":"login","data":"{ token: "abcdef" }"}
   @SubscribeMessage('login')
   async onLogin(
     client: MyWebSocket,
@@ -85,15 +91,43 @@ export class WsGateway implements OnApplicationShutdown {
     const input = JSON.parse(data);
     try {
       const payload = await this.jwtService.verifyAsync(input.token);
+
+      if (payload.id === null) {
+        return {
+          event: 'auth_fail',
+          data: { message: 'token is old version' },
+        };
+      }
+
+      client.extra.id = payload.id;
       client.extra.account = payload.account;
 
       return { event: 'login_ack', data: { login: true } };
     } catch (err) {
-      return { event: 'auth_fail', data: {} };
+      return { event: 'auth_fail', data: { message: 'verify fail' } };
     }
   }
 
-  // client send: {"event":"board","data":""}
+  // client send: {"event":"open","data":"{ playerId: "xxx", level: 0}"}
+  @SubscribeMessage('start')
+  async onStart(
+    client: MyWebSocket,
+    data: string,
+  ): Promise<WsResponse<object>> {
+    if (this.checkAuth(client) === false) {
+      return { event: 'error', data: {} };
+    }
+
+    const input = JSON.parse(data);
+    const gameId = await this.useCaseService.startUseCase.execute(
+      client.extra.id,
+      input.level,
+    );
+
+    return this.gameInfo(gameId);
+  }
+
+  // client send: {"event":"board","data":"{ gameId: "xxx" }"}
   @SubscribeMessage('gameInfo')
   async onGameInfo(
     client: MyWebSocket,
@@ -158,22 +192,9 @@ export class WsGateway implements OnApplicationShutdown {
     return this.gameInfo(input.gameId);
   }
 
-  // client send: {"event":"open","data":"{level: 0}"}
-  @SubscribeMessage('start')
-  async onStart(client: any, data: string): Promise<WsResponse<object>> {
-    if (this.checkAuth(client) === false) {
-      return { event: 'error', data: {} };
-    }
-
-    const input = JSON.parse(data);
-    const gameId = await this.useCaseService.startUseCase.execute(input.level);
-
-    return this.gameInfo(gameId);
-  }
-
   async gameInfo(gameId: string) {
     if (gameId === undefined || gameId === null) {
-      gameId = await this.useCaseService.startUseCase.execute();
+      throw Error('Game not Exist');
     }
 
     const game: Minesweeper =
