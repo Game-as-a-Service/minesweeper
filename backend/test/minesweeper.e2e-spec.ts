@@ -76,6 +76,10 @@ describe('Asynchronous WebSocket Code', () => {
     sendData('ping', {});
   };
 
+  const start = () => {
+    sendData('start', { level: 0 });
+  };
+
   const gameInfo = (gameId: string = undefined) => {
     sendData('gameInfo', { gameId });
   };
@@ -177,16 +181,15 @@ describe('Asynchronous WebSocket Code', () => {
 
   it('遊戲開始後，gameState 應該是 NONE', async () => {
     await initialize();
-
-    gameInfo();
+    start();
     const event = await onWsMessage();
     expect(event.data.gameState.winLose).toBe(WinLoseState.NONE);
   });
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置還沒踩過且沒有插旗', async () => {
+    // Init
     await initialize();
-
-    gameInfo();
+    start();
 
     // given
     // 這個位置還沒踩過且沒有插旗
@@ -204,9 +207,9 @@ describe('Asynchronous WebSocket Code', () => {
   });
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被踩過', async () => {
+    // Init
     await initialize();
-
-    gameInfo();
+    start();
 
     let event = await onWsMessage();
     expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);
@@ -228,9 +231,9 @@ describe('Asynchronous WebSocket Code', () => {
   });
 
   it('只能踩還沒有踩過且沒有插旗的格子 - 這個位置已經被插旗', async () => {
+    // Init
     await initialize();
-
-    gameInfo();
+    start();
 
     let event = await onWsMessage();
     expect(event.data.cells[0][0].state).toBe(CellState.UNOPENED);

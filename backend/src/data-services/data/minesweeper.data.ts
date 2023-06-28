@@ -4,7 +4,8 @@ import { Size } from '../../minesweeper/size';
 
 export type MinesweeperData = {
   gameId: string;
-  playerId: number;
+  // null 表示匿名玩家
+  playerId?: number;
   gameState: GameState;
   board: Board;
   levelConfig: LevelConfig;
