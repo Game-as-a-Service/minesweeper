@@ -7,6 +7,11 @@ import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { onUnmounted, ref } from "vue";
 
+interface Room {
+  gameId: string;
+  playerAccount: string;
+}
+
 const urlHost = location.host.split(":")[0];
 const port = 3000;
 let server = `wss://minesweeper.snowbellstudio.com:${port}`;
@@ -24,6 +29,7 @@ const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>();
 const store = useUserStore();
 let reConnection = true;
+const roomList = ref<Room[]>([]);
 
 onUnmounted(() => {
   reConnection = false;
@@ -86,6 +92,11 @@ const flag = (item: Cell, event: MouseEvent) => {
   sendData("flag", data);
 };
 
+const joinRoom = (gameId: string) => {
+  localStorage.setItem("gameId", gameId);
+  sendData("gameInfo", {});
+}
+
 let interval: ReturnType<typeof setInterval> | undefined;
 let isAlive = true;
 let ping = ref(0);
@@ -127,11 +138,15 @@ const connect = () => {
         } else {
           start();
         }
+        sendData("roomList", {});
         break;
       case "auth_fail":
         socket.close();
         store.logout();
         router.push({ name: "login" });
+        break;
+      case "roomList":
+        roomList.value = json.data.roomList;
         break;
       case "gameInfo":
         // console.log(`cellsInfo: ${json.data}`);
@@ -162,7 +177,12 @@ connect();
 </script>
 
 <template>
-  <div class="about">
+  <div class="root">
+    <div class="roomList">
+      <div class="flex" v-for="(room, index) of roomList" :key="index">
+        <div @click="joinRoom(room.gameId)">{{room.playerAccount}}</div>
+      </div>
+    </div>
     <div class="box">
       <div>Hi</div>
       <div class="center">Online: {{ clientCount }}</div>
@@ -210,10 +230,13 @@ connect();
 </template>
 
 <style>
-.about {
+.root{
   min-height: 100vh;
   display: flex;
   align-items: center;
+}
+.roomList{
+  margin-right: 50px;
 }
 .box {
   display: flex;

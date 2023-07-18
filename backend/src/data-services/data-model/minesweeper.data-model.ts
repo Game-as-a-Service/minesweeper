@@ -25,6 +25,7 @@ export default class MinesweeperDataModel
   toDomain(data: MinesweeperData): Minesweeper {
     const domain = new Minesweeper();
     domain.gameId = data.gameId;
+    domain.playerId = data.playerId;
     domain.gameState = data.gameState;
     domain.board = new Board(domain);
     domain.board.cells = data.board.cells;
