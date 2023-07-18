@@ -62,6 +62,7 @@ describe('Asynchronous WebSocket Code', () => {
   const clearDatabase = async () => {
     await prismaService.user.deleteMany();
     await prismaService.game.deleteMany();
+    await prismaService.$queryRaw`ALTER SEQUENCE public."User_id_seq" RESTART WITH 1;`;
   };
 
   const sendData = (event: string, eventData: object) => {
@@ -279,6 +280,7 @@ describe('Asynchronous WebSocket Code', () => {
 
     const data: MinesweeperData = {
       gameId: randomUUID(),
+      playerId: 1,
       gameState: {
         isPlay: true,
         winLose: WinLoseState.NONE,
@@ -298,6 +300,8 @@ describe('Asynchronous WebSocket Code', () => {
 
   it('踩到地雷遊戲結束', async () => {
     // Given
+    await initialize();
+
     const data = initData();
 
     // 在 0, 0 放地雷
@@ -306,8 +310,6 @@ describe('Asynchronous WebSocket Code', () => {
     const domain: Minesweeper =
       dataServices.minesweeperDataModel.toDomain(data);
     await dataServices.minesweeperRepository.save(domain);
-
-    await initialize();
 
     gameInfo(domain.gameId);
 
@@ -326,6 +328,9 @@ describe('Asynchronous WebSocket Code', () => {
 
   it('沒踩到地雷會知道附近有多少地雷', async () => {
     // Given
+    await initialize();
+    // eslint-disable-next-line prettier/prettier
+
     const data = initData();
 
     // 在 0, 0 放地雷
@@ -335,8 +340,6 @@ describe('Asynchronous WebSocket Code', () => {
     const domain: Minesweeper =
       dataServices.minesweeperDataModel.toDomain(data);
     await dataServices.minesweeperRepository.save(domain);
-
-    await initialize();
 
     gameInfo(domain.gameId);
 
@@ -353,6 +356,8 @@ describe('Asynchronous WebSocket Code', () => {
 
   it('沒踩到地雷且附近也沒有地雷，自動踩附近的所有位置', async () => {
     // Given
+    await initialize();
+
     const data = initData();
 
     // 在 2, 2 放地雷
@@ -361,8 +366,6 @@ describe('Asynchronous WebSocket Code', () => {
     const domain: Minesweeper =
       dataServices.minesweeperDataModel.toDomain(data);
     await dataServices.minesweeperRepository.save(domain);
-
-    await initialize();
 
     gameInfo(domain.gameId);
 
