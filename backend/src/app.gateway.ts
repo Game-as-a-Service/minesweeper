@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { Minesweeper } from './minesweeper/minesweeper';
-import { flatten, OnApplicationShutdown } from '@nestjs/common';
+import { OnApplicationShutdown } from '@nestjs/common';
 import { DataServices } from './data-services/data-services.service';
 import { UseCaseService } from './use-case/use-case.service';
 import { WebSocket } from 'ws';
@@ -19,13 +19,14 @@ interface MyWebSocket extends WebSocket {
       account: string;
       id: number;
     };
+    game: {
+      isPlaying: boolean;
+      id: string;
+      viewerList: MyWebSocket[];
+      isViewer: boolean;
+      watchUserId: number;
+    };
   };
-}
-
-interface Room {
-  gameId: string;
-  player: MyWebSocket;
-  viewerList: MyWebSocket[];
 }
 
 @WebSocketGateway()
@@ -34,7 +35,6 @@ export class WsGateway implements OnApplicationShutdown {
   server: Server;
   clientList: MyWebSocket[];
   isAliveTimer: NodeJS.Timer = undefined;
-  roomMap: Map<string, Room> = new Map<string, Room>();
 
   constructor(
     private readonly dataServices: DataServices,
@@ -63,6 +63,13 @@ export class WsGateway implements OnApplicationShutdown {
       user: {
         account: '',
         id: -1,
+      },
+      game: {
+        isPlaying: false,
+        id: '',
+        viewerList: [],
+        isViewer: false,
+        watchUserId: -1,
       },
     };
     this.clientList.push(client);
@@ -143,6 +150,9 @@ export class WsGateway implements OnApplicationShutdown {
       input.level,
     );
 
+    client.extra.game.isPlaying = true;
+    client.extra.game.id = gameId;
+
     await this.joinRoom(gameId, client);
 
     return this.gameInfo(gameId);
@@ -156,10 +166,14 @@ export class WsGateway implements OnApplicationShutdown {
 
     const data = { roomList: [] };
 
-    for (const [, room] of this.roomMap) {
+    const playingList = this.clientList.filter((c: MyWebSocket) => {
+      return c.extra.game.isPlaying;
+    });
+
+    for (const client of playingList) {
       data.roomList.push({
-        gameId: room.gameId,
-        playerAccount: room.player.extra.user.account,
+        gameId: client.extra.game.id,
+        playerAccount: client.extra.user.account,
       });
     }
 
@@ -274,56 +288,44 @@ export class WsGateway implements OnApplicationShutdown {
   }
 
   broadcast(gameId: string, event) {
-    const room = this.roomMap.get(gameId);
+    const host = this.clientList.filter((c) => c.extra.game.id === gameId);
 
-    if (room === undefined) {
-      return;
-    }
-
-    for (const client of room.viewerList) {
+    for (const client of host[0].extra.game.viewerList) {
       client.send(JSON.stringify(event));
     }
   }
 
   async joinRoom(gameId: string, client: MyWebSocket) {
     this.leaveRoom(client);
-    let room = this.roomMap.get(gameId);
 
-    if (room === undefined) {
-      const game: Minesweeper =
-        await this.dataServices.minesweeperRepository.findById(gameId);
-
-      if (client.extra.user.id == game.playerId) {
-        room = {
-          gameId: gameId,
-          player: client,
-          viewerList: [],
-        };
-        this.roomMap.set(gameId, room);
-      }
+    if (await this.isPlayer(gameId, client.extra.user.id)) {
+      client.extra.game.isPlaying = true;
+      client.extra.game.id = gameId;
+    } else {
+      const host = this.clientList.filter((c) => c.extra.game.id === gameId)[0];
+      host.extra.game.viewerList.push(client);
+      client.extra.game.isViewer = true;
+      client.extra.game.watchUserId = host.extra.user.id;
     }
-
-    if (room === undefined) {
-      console.log(`Error: Room is not exist`);
-      return;
-    }
-
-    room.viewerList.push(client);
   }
 
   private leaveRoom(client: MyWebSocket) {
-    for (const [, room] of this.roomMap) {
-      if (room.player === client) {
-        this.roomMap.delete(room.gameId);
-        // TODO Notify other viewers
-      }
+    if (client.extra.game.isPlaying) {
+      client.extra.game.isPlaying = false;
+      client.extra.game.id = '';
+    }
 
-      for (const viewer of room.viewerList) {
-        const index = room.viewerList.indexOf(client, 0);
-        if (index > -1) {
-          room.viewerList.splice(index, 1);
-        }
+    if (client.extra.game.isViewer) {
+      const host = this.clientList.filter(
+        (c) => c.extra.user.id === client.extra.game.watchUserId,
+      )[0];
+
+      const index = host.extra.game.viewerList.indexOf(client, 0);
+      if (index > -1) {
+        host.extra.game.viewerList.splice(index, 1);
       }
+      client.extra.game.isViewer = false;
+      client.extra.game.watchUserId = -1;
     }
   }
 }
