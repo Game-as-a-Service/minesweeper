@@ -15,8 +15,10 @@ import { JwtService } from '@nestjs/jwt';
 interface MyWebSocket extends WebSocket {
   extra: {
     isAlive: boolean;
-    id: number;
-    account: string;
+    user: {
+      account: string;
+      id: number;
+    };
   };
 }
 
@@ -57,9 +59,11 @@ export class WsGateway implements OnApplicationShutdown {
 
   async handleConnection(client: MyWebSocket) {
     client.extra = {
-      id: -1,
       isAlive: true,
-      account: '',
+      user: {
+        account: '',
+        id: -1,
+      },
     };
     this.clientList.push(client);
   }
@@ -79,11 +83,11 @@ export class WsGateway implements OnApplicationShutdown {
   }
 
   checkAuth(client: MyWebSocket) {
-    if (client.extra.id === -1) {
+    if (client.extra.user.id === -1) {
       return false;
     }
 
-    if (client.extra.account === '') {
+    if (client.extra.user.account === '') {
       return false;
     }
 
@@ -114,8 +118,8 @@ export class WsGateway implements OnApplicationShutdown {
         };
       }
 
-      client.extra.id = payload.id;
-      client.extra.account = payload.account;
+      client.extra.user.id = payload.id;
+      client.extra.user.account = payload.account;
 
       return { event: 'login_ack', data: { login: true } };
     } catch (err) {
@@ -135,7 +139,7 @@ export class WsGateway implements OnApplicationShutdown {
 
     const input = JSON.parse(data);
     const gameId = await this.useCaseService.startUseCase.execute(
-      client.extra.id,
+      client.extra.user.id,
       input.level,
     );
 
@@ -155,7 +159,7 @@ export class WsGateway implements OnApplicationShutdown {
     for (const [, room] of this.roomMap) {
       data.roomList.push({
         gameId: room.gameId,
-        playerAccount: room.player.extra.account,
+        playerAccount: room.player.extra.user.account,
       });
     }
 
@@ -181,13 +185,13 @@ export class WsGateway implements OnApplicationShutdown {
 
   // client send: {"event":"open","data":"{x: 0, y: 1}"}
   @SubscribeMessage('open')
-  async onOpen(client: any, data: string): Promise<WsResponse<object>> {
+  async onOpen(client: MyWebSocket, data: string): Promise<WsResponse<object>> {
     if (this.checkAuth(client) === false) {
       return { event: 'error', data: {} };
     }
 
     const input = JSON.parse(data);
-    if ((await this.isPlayer(input.gameId, client.extra.id)) === false) {
+    if ((await this.isPlayer(input.gameId, client.extra.user.id)) === false) {
       return;
     }
 
@@ -202,13 +206,13 @@ export class WsGateway implements OnApplicationShutdown {
 
   // client send: {"event":"flag","data":"{x: 0, y: 1}"}
   @SubscribeMessage('flag')
-  async onFlag(client: any, data: string): Promise<WsResponse<object>> {
+  async onFlag(client: MyWebSocket, data: string): Promise<WsResponse<object>> {
     if (this.checkAuth(client) === false) {
       return { event: 'error', data: {} };
     }
 
     const input = JSON.parse(data);
-    if ((await this.isPlayer(input.gameId, client.extra.id)) === false) {
+    if ((await this.isPlayer(input.gameId, client.extra.user.id)) === false) {
       return;
     }
     await this.useCaseService.flagUseCase.execute(
@@ -222,13 +226,16 @@ export class WsGateway implements OnApplicationShutdown {
 
   // client send: {"event":"chording","data":"{x: 0, y: 1}"}
   @SubscribeMessage('chording')
-  async onChording(client: any, data: string): Promise<WsResponse<object>> {
+  async onChording(
+    client: MyWebSocket,
+    data: string,
+  ): Promise<WsResponse<object>> {
     if (this.checkAuth(client) === false) {
       return { event: 'error', data: {} };
     }
 
     const input = JSON.parse(data);
-    if ((await this.isPlayer(input.gameId, client.extra.id)) === false) {
+    if ((await this.isPlayer(input.gameId, client.extra.user.id)) === false) {
       return;
     }
     await this.useCaseService.chordingUseCase.execute(
@@ -286,7 +293,7 @@ export class WsGateway implements OnApplicationShutdown {
       const game: Minesweeper =
         await this.dataServices.minesweeperRepository.findById(gameId);
 
-      if (client.extra.id == game.playerId) {
+      if (client.extra.user.id == game.playerId) {
         room = {
           gameId: gameId,
           player: client,
