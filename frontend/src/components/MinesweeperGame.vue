@@ -24,13 +24,17 @@ if (urlHost === "localhost" || urlHost === "127.0.0.1") {
 
 const route = useRoute();
 const gameId = route.params.gameId as string;
-localStorage.setItem("gameId", gameId);
 
 const token = route.query.token as string;
 if (token) {
   localStorage.setItem("waterball", token);
 }
-router.push(`/games/${gameId}`);
+
+
+if (gameId) {
+  localStorage.setItem("gameId", gameId);
+  router.push(`/games/${gameId}`);
+}
 
 let socket: WebSocket;
 

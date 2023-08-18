@@ -38,6 +38,7 @@ async function login() {
       store.user.account = vm.user.account;
       store.user.token = token;
       vm.message = "login ok";
+      localStorage.removeItem("waterball");
       router.push({ name: "game" });
     }
   } catch (err: any) {
