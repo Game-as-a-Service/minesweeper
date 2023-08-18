@@ -6,6 +6,7 @@ import { Level } from "@/minesweeper/level";
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 interface Room {
   gameId: string;
@@ -20,6 +21,16 @@ let server = `wss://minesweeper.snowbellstudio.com:${port}`;
 if (urlHost === "localhost" || urlHost === "127.0.0.1") {
   server = `ws://localhost:${port}`;
 }
+
+const route = useRoute();
+const gameId = route.params.gameId as string;
+localStorage.setItem("gameId", gameId);
+
+const token = route.query.token as string;
+if (token) {
+  localStorage.setItem("waterball", token);
+}
+router.push(`/games/${gameId}`);
 
 let socket: WebSocket;
 
@@ -95,7 +106,7 @@ const flag = (item: Cell, event: MouseEvent) => {
 const joinRoom = (gameId: string) => {
   localStorage.setItem("gameId", gameId);
   sendData("gameInfo", {});
-}
+};
 
 let interval: ReturnType<typeof setInterval> | undefined;
 let isAlive = true;
@@ -118,7 +129,12 @@ const connect = () => {
       socket.send(JSON.stringify({ event: "ping", data }));
     }, 1000 * 1);
 
-    sendData("login", { token: store.user.token });
+    const wbToken = localStorage.getItem("waterball");
+    if (wbToken) {
+      sendData("login_waterball", { token: wbToken });
+    } else {
+      sendData("login", { token: store.user.token });
+    }
   };
 
   socket.onmessage = function (data) {
@@ -131,6 +147,12 @@ const connect = () => {
         isAlive = true;
         // console.log(json.data.timestamp);
         ping.value = Date.now() - json.data.timestamp;
+        break;
+      case "login_waterball_ack":
+        // store.user.account = json.data.account;
+        store.user.token = json.data.jwt;
+        localStorage.setItem("token", store.user.token);
+        sendData("login", { token: store.user.token });
         break;
       case "login_ack":
         if (localStorage.getItem("gameId")) {
@@ -180,7 +202,7 @@ connect();
   <div class="root">
     <div class="roomList">
       <div class="flex" v-for="(room, index) of roomList" :key="index">
-        <div @click="joinRoom(room.gameId)">{{room.playerAccount}}</div>
+        <div @click="joinRoom(room.gameId)">{{ room.playerAccount }}</div>
       </div>
     </div>
     <div class="box">
@@ -230,12 +252,12 @@ connect();
 </template>
 
 <style>
-.root{
+.root {
   min-height: 100vh;
   display: flex;
   align-items: center;
 }
-.roomList{
+.roomList {
   margin-right: 50px;
 }
 .box {

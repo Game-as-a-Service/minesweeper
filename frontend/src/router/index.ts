@@ -18,8 +18,8 @@ const router = createRouter({
       component: () => import("../views/AboutView.vue"),
     },
     {
-      path: "/game",
-      name: "game",
+      path: "/games/:gameId",
+      name: "games",
       component: () => import("../components/MinesweeperGame.vue"),
     },
     {

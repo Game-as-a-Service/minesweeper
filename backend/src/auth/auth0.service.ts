@@ -45,11 +45,11 @@ export class Auth0Service {
     const id = await this.queryUserId(token);
     const userAccount = `waterball-${id}`;
     // 最後登入自己的系統
-    let user = await this.userService.users({
+    const users = await this.userService.users({
       where: { account: userAccount, isExternalProvider: true },
     });
 
-    if (user.length === 0) {
+    if (users.length === 0) {
       await this.userService.createUser({
         account: userAccount,
         password: '',
@@ -57,14 +57,21 @@ export class Auth0Service {
       });
     }
 
-    user = await this.userService.users({
-      where: { account: userAccount, isExternalProvider: true },
-    });
+    const user = (
+      await this.userService.users({
+        where: { account: userAccount, isExternalProvider: true },
+      })
+    )[0];
 
-    return user[0];
+    const payload = { id: user.id, account: user.account };
+    const jwt = await this.jwtService.signAsync(payload);
+
+    return { user, jwt };
   }
 
   async queryUserId(token: string) {
+    // return '123456789';
+
     const hostUrl = 'https://api.gaas.waterballsa.tw/';
 
     const res = await axios({

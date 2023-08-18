@@ -11,6 +11,7 @@ import { DataServices } from './data-services/data-services.service';
 import { UseCaseService } from './use-case/use-case.service';
 import { WebSocket } from 'ws';
 import { JwtService } from '@nestjs/jwt';
+import { Auth0Service } from './auth/auth0.service';
 
 interface MyWebSocket extends WebSocket {
   extra: {
@@ -40,6 +41,7 @@ export class WsGateway implements OnApplicationShutdown {
     private readonly dataServices: DataServices,
     private readonly useCaseService: UseCaseService,
     private readonly jwtService: JwtService,
+    private readonly auth0Service: Auth0Service,
   ) {
     this.clientList = [];
 
@@ -106,6 +108,20 @@ export class WsGateway implements OnApplicationShutdown {
       await this.dataServices.minesweeperRepository.findById(gameId);
 
     return game.playerId === playerId;
+  }
+
+  @SubscribeMessage('login_waterball')
+  async onLoginWaterball(
+    client: MyWebSocket,
+    data: string,
+  ): Promise<WsResponse<object>> {
+    const input = JSON.parse(data);
+    try {
+      const { jwt } = await this.auth0Service.login(input.token);
+      return { event: 'login_waterball_ack', data: { jwt } };
+    } catch (err) {
+      return { event: 'auth_fail', data: { message: 'verify fail' } };
+    }
   }
 
   // client send: {"event":"login","data":"{ token: "abcdef" }"}

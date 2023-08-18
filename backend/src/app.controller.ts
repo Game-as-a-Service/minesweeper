@@ -56,7 +56,7 @@ export class AppController {
     // const payload = await this.auth0Service.verifyToken(token);
 
     // 第三方登入後，轉成本地驗證
-    const user = await this.auth0Service.login(token);
+    const { user } = await this.auth0Service.login(token);
 
     const gameId = await this.useCaseService.startUseCase.execute(
       user.id,
