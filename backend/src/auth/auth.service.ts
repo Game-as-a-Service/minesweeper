@@ -18,6 +18,11 @@ export class AuthService {
       return null;
     }
 
+    // 第三方要用 Auth0Service 流程
+    if (user.isExternalProvider) {
+      return null;
+    }
+
     const isPasswordMatching = await compare(password, user.password);
 
     if (isPasswordMatching) {

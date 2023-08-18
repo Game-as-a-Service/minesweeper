@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwksClient } from 'jwks-rsa';
+import axios from 'axios';
+import { UserService } from '../user/user.service';
 
 const issuerUrl = 'https://dev-1l0ixjw8yohsluoi.us.auth0.com/';
 const audienceUrl = 'https://api.gaas.waterballsa.tw';
 const jwksUrl = `${issuerUrl}.well-known/jwks.json`;
 @Injectable()
 export class Auth0Service {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private userService: UserService,
+  ) {}
 
   jwksClient = new JwksClient({
     cache: true, // Default Value
@@ -31,5 +36,46 @@ export class Auth0Service {
       audience: audienceUrl,
       issuer: issuerUrl,
     });
+  }
+
+  async login(token: string) {
+    // 先用 verifyToken 驗證 token 合法
+    await this.verifyToken(token);
+    // 然後去大平台詢問 user id
+    const id = await this.queryUserId(token);
+    const userAccount = `waterball-${id}`;
+    // 最後登入自己的系統
+    let user = await this.userService.users({
+      where: { account: userAccount, isExternalProvider: true },
+    });
+
+    if (user.length === 0) {
+      await this.userService.createUser({
+        account: userAccount,
+        password: '',
+        isExternalProvider: true,
+      });
+    }
+
+    user = await this.userService.users({
+      where: { account: userAccount, isExternalProvider: true },
+    });
+
+    return user[0];
+  }
+
+  async queryUserId(token: string) {
+    const hostUrl = 'https://api.gaas.waterballsa.tw/';
+
+    const res = await axios({
+      method: 'get',
+      url: `${hostUrl}users/me`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const user = res.data as { id: string; email: string; nickname: string };
+    return user.id;
   }
 }
