@@ -30,7 +30,6 @@ if (token) {
   localStorage.setItem("waterball", token);
 }
 
-
 if (gameId) {
   localStorage.setItem("gameId", gameId);
   router.push(`/games/${gameId}`);
@@ -45,6 +44,7 @@ const gameState = ref<GameState>();
 const store = useUserStore();
 let reConnection = true;
 const roomList = ref<Room[]>([]);
+const nickName = ref("");
 
 onUnmounted(() => {
   reConnection = false;
@@ -155,6 +155,7 @@ const connect = () => {
       case "login_waterball_ack":
         // store.user.account = json.data.account;
         store.user.token = json.data.jwt;
+        nickName.value = json.data.nickname;
         localStorage.setItem("token", store.user.token);
         sendData("login", { token: store.user.token });
         break;
@@ -210,7 +211,7 @@ connect();
       </div>
     </div>
     <div class="box">
-      <div>Hi</div>
+      <div>Hi: {{ nickName }}</div>
       <div class="center">Online: {{ clientCount }}</div>
       <div class="center">Ping: {{ ping }} ms</div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>

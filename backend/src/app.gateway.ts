@@ -117,8 +117,8 @@ export class WsGateway implements OnApplicationShutdown {
   ): Promise<WsResponse<object>> {
     const input = JSON.parse(data);
     try {
-      const { jwt } = await this.auth0Service.login(input.token);
-      return { event: 'login_waterball_ack', data: { jwt } };
+      const { jwt, nickname } = await this.auth0Service.login(input.token);
+      return { event: 'login_waterball_ack', data: { jwt, nickname } };
     } catch (err) {
       return { event: 'auth_fail', data: { message: 'verify fail' } };
     }

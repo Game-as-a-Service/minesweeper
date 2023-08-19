@@ -42,8 +42,8 @@ export class Auth0Service {
     // 先用 verifyToken 驗證 token 合法
     await this.verifyToken(token);
     // 然後去大平台詢問 user id
-    const id = await this.queryUserId(token);
-    const userAccount = `waterball-${id}`;
+    const waterballUser = await this.queryUserId(token);
+    const userAccount = `waterball-${waterballUser.id}`;
     // 最後登入自己的系統
     const users = await this.userService.users({
       where: { account: userAccount, isExternalProvider: true },
@@ -66,7 +66,7 @@ export class Auth0Service {
     const payload = { id: user.id, account: user.account };
     const jwt = await this.jwtService.signAsync(payload);
 
-    return { user, jwt };
+    return { user, jwt, nickname: waterballUser.nickname };
   }
 
   async queryUserId(token: string) {
@@ -83,6 +83,6 @@ export class Auth0Service {
     });
 
     const user = res.data as { id: string; email: string; nickname: string };
-    return user.id;
+    return user;
   }
 }
