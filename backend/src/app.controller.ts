@@ -64,8 +64,10 @@ export class AppController {
     );
 
     const hostUrl = 'https://minesweeper.snowbellstudio.com/';
-    return `${hostUrl}games/${gameId}`;
+    const url = `${hostUrl}games/${gameId}`;
+    return { url };
   }
+
   @Get('health')
   async getHealth() {
     return `OK`;
