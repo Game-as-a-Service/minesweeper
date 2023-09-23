@@ -4,8 +4,9 @@ import { Cell, CellState } from "@/minesweeper/cell";
 import { GameState, WinLoseState } from "@/minesweeper/gameState";
 import { Level } from "@/minesweeper/level";
 import router from "@/router";
+import { useSocketStore } from "@/stores/socket";
 import { useUserStore } from "@/stores/user";
-import { onUnmounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 interface Room {
@@ -13,16 +14,9 @@ interface Room {
   playerAccount: string;
 }
 
-const urlHost = location.host.split(":")[0];
-const port = 3000;
-let server = `wss://minesweeper.snowbellstudio.com:${port}`;
-
-// for local dev
-if (urlHost === "localhost" || urlHost === "127.0.0.1") {
-  server = `ws://localhost:${port}`;
-}
-
 const route = useRoute();
+const socketStore = useSocketStore();
+
 const gameId = route.params.gameId as string;
 
 const token = route.query.token as string;
@@ -35,21 +29,63 @@ if (gameId) {
   router.push(`/games/${gameId}`);
 }
 
-let socket: WebSocket;
+let wbToken: string | null = null;
 
 const level = ref(Level.BEGINNER);
 const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>();
 const store = useUserStore();
-let reConnection = true;
 const roomList = ref<Room[]>([]);
 const nickName = ref("");
 
-onUnmounted(() => {
-  reConnection = false;
-  socket.close();
+onMounted(() => {
+  socketStore.addEventListener("login_ack", (data: any) => {
+    if (localStorage.getItem("gameId")) {
+      sendData("gameInfo", {});
+    } else {
+      start();
+    }
+    sendData("roomList", {});
+  });
+
+  socketStore.addEventListener("login_waterball_ack", (data: any) => {
+    store.user.token = data.jwt;
+    nickName.value = data.nickname;
+    localStorage.setItem("token", store.user.token);
+    sendData("login", { token: store.user.token });
+  });
+
+  socketStore.addEventListener("auth_fail", (data: any) => {
+    console.log("auth_fail");
+    store.logout();
+    if (!wbToken) {
+      router.push({ name: "login" });
+    }
+  });
+
+  socketStore.addEventListener("roomLisk", (data: any) => {
+    roomList.value = data.roomList;
+  });
+
+  socketStore.addEventListener("gameInfo", (data: any) => {
+    localStorage.setItem("gameId", data.gameId);
+    clientCount.value = data.clientCount;
+    cells.value = data.cells;
+    gameState.value = data.gameState;
+  });
+
+  login();
 });
+
+function login() {
+  wbToken = localStorage.getItem("waterball");
+  if (wbToken) {
+    sendData("login_waterball", { token: wbToken });
+  } else {
+    sendData("login", { token: store.user.token });
+  }
+}
 
 const changeLevel = function (newLevel: Level) {
   level.value = newLevel;
@@ -57,15 +93,10 @@ const changeLevel = function (newLevel: Level) {
 };
 
 const sendData = (event: string, data: object) => {
-  socket.send(
-    JSON.stringify({
-      event: event,
-      data: JSON.stringify({
-        gameId: localStorage.getItem("gameId"),
-        ...data,
-      }),
-    })
-  );
+  socketStore.sendEvent(event, {
+    gameId: localStorage.getItem("gameId"),
+    ...data,
+  });
 };
 
 const start = function () {
@@ -111,96 +142,6 @@ const joinRoom = (gameId: string) => {
   localStorage.setItem("gameId", gameId);
   sendData("gameInfo", {});
 };
-
-let interval: ReturnType<typeof setInterval> | undefined;
-let isAlive = true;
-let ping = ref(0);
-
-const connect = () => {
-  socket = new WebSocket(server);
-
-  socket.onopen = function () {
-    // console.log("Connected");
-
-    clearInterval(interval);
-    interval = setInterval(() => {
-      if (isAlive === false) socket.close();
-
-      isAlive = false;
-      let data = {
-        timestamp: Date.now(),
-      };
-      socket.send(JSON.stringify({ event: "ping", data }));
-    }, 1000 * 1);
-
-    const wbToken = localStorage.getItem("waterball");
-    if (wbToken) {
-      sendData("login_waterball", { token: wbToken });
-    } else {
-      sendData("login", { token: store.user.token });
-    }
-  };
-
-  socket.onmessage = function (data) {
-    // console.log(data);
-    // console.log(data.data);
-    let json = JSON.parse(data.data);
-    // console.log(json);
-    switch (json.event) {
-      case "pong":
-        isAlive = true;
-        // console.log(json.data.timestamp);
-        ping.value = Date.now() - json.data.timestamp;
-        break;
-      case "login_waterball_ack":
-        // store.user.account = json.data.account;
-        store.user.token = json.data.jwt;
-        nickName.value = json.data.nickname;
-        localStorage.setItem("token", store.user.token);
-        sendData("login", { token: store.user.token });
-        break;
-      case "login_ack":
-        if (localStorage.getItem("gameId")) {
-          sendData("gameInfo", {});
-        } else {
-          start();
-        }
-        sendData("roomList", {});
-        break;
-      case "auth_fail":
-        socket.close();
-        store.logout();
-        router.push({ name: "login" });
-        break;
-      case "roomList":
-        roomList.value = json.data.roomList;
-        break;
-      case "gameInfo":
-        // console.log(`cellsInfo: ${json.data}`);
-        localStorage.setItem("gameId", json.data.gameId);
-        clientCount.value = json.data.clientCount;
-        cells.value = json.data.cells;
-        gameState.value = json.data.gameState;
-        break;
-      default:
-        console.log(`unknow event: ${json.event}`);
-    }
-  };
-
-  socket.onclose = function () {
-    clearInterval(interval);
-    if (reConnection) {
-      setTimeout(connect, 1000);
-    }
-  };
-
-  socket.onerror = function (error) {
-    console.error("WebSocket error:", error);
-    socket.close();
-  };
-};
-
-connect();
 </script>
 
 <template>
@@ -213,7 +154,6 @@ connect();
     <div class="box">
       <div>Hi: {{ nickName }}</div>
       <div class="center">Online: {{ clientCount }}</div>
-      <div class="center">Ping: {{ ping }} ms</div>
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
       <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
       <div>

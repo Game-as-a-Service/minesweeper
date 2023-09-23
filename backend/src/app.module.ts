@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { WsGateway } from './app.gateway';
+import { EventsGateway } from './events.gateway';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -32,7 +32,7 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.local.env';
   controllers: [AppController],
   providers: [
     AppService,
-    WsGateway,
+    EventsGateway,
     PrismaService,
     DataServices,
     UseCaseService,

@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
-import { WsAdapter } from '@nestjs/platform-ws';
 
 // 範例程式，沒使用
 describe.skip('AppController (e2e)', () => {
@@ -14,7 +13,6 @@ describe.skip('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useWebSocketAdapter(new WsAdapter(app));
     app.enableShutdownHooks();
     await app.init();
   });
