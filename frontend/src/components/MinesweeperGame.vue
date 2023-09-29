@@ -64,7 +64,7 @@ onMounted(() => {
     }
   });
 
-  socketStore.addEventListener("roomLisk", (data: any) => {
+  socketStore.addEventListener("roomList", (data: any) => {
     roomList.value = data.roomList;
   });
 

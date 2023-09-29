@@ -3,6 +3,7 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -35,7 +36,7 @@ interface MyWebSocket extends Socket {
     origin: '*',
   },
 })
-export class EventsGateway implements OnGatewayConnection {
+export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
   clientList: MyWebSocket[];
@@ -64,6 +65,14 @@ export class EventsGateway implements OnGatewayConnection {
       },
     };
     this.clientList.push(client);
+  }
+
+  handleDisconnect(client: MyWebSocket) {
+    const index = this.clientList.indexOf(client, 0);
+    if (index > -1) {
+      this.clientList.splice(index, 1);
+    }
+    this.leaveRoom(client);
   }
 
   @SubscribeMessage('ping')
@@ -285,7 +294,7 @@ export class EventsGateway implements OnGatewayConnection {
     const host = this.clientList.filter((c) => c.data.game.id === gameId);
 
     for (const client of host[0].data.game.viewerList) {
-      client.send(JSON.stringify(event));
+      client.emit(event.event, event.data);
     }
   }
 
