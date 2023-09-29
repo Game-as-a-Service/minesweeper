@@ -198,7 +198,6 @@ const joinRoom = (gameId: string) => {
 
 <style>
 .root {
-  min-height: 100vh;
   display: flex;
   align-items: center;
 }

@@ -34,7 +34,6 @@ async function signup() {
 
 <style>
 .root {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;

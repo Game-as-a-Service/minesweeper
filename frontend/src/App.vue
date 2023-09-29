@@ -21,10 +21,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <div>Scoket state: {{ socketStore.state.connected }}</div>
-    <div>Ping: {{ socketStore.state.ping }}</div>
-  </div>
   <RouterView />
 </template>
 
