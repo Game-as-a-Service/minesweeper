@@ -2,13 +2,12 @@
 
 <template>
   <div class="greetings">
-    <h1 class="green">You did it!</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
-      What's next?
-    </h3>
+    <h1 class="green">MineSweeper 踩地雷</h1>
+    <h3>遊戲截圖</h3>
+    <img
+      alt="game image"
+      src="https://user-images.githubusercontent.com/4581416/212919339-82431587-cc61-49ed-b089-b4cb8aa08bb9.png"
+    />
   </div>
 </template>
 
