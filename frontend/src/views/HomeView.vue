@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { helloWorld } from "@/lib/index";
+
+console.log(helloWorld());
+</script>
 
 <template>
   <div class="greetings">

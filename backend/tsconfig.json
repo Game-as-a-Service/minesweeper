@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+//    "composite": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -8,8 +9,13 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
+    "rootDirs": ["./src", "../lib/src"],
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@/lib/*": ["../lib/src/*"],
+//      "@/*": ["./src/*"],
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,5 +24,8 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+//  "references": [
+//    { "path": "../lib/src" }
+//  ]
 }
