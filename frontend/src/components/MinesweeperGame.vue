@@ -75,6 +75,10 @@ onMounted(() => {
     gameState.value = data.gameState;
   });
 
+  socketStore.setConnectHandler(() => {
+    login();
+  });
+
   login();
 });
 
