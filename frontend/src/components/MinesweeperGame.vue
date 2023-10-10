@@ -149,6 +149,7 @@ const joinRoom = (gameId: string) => {
 </script>
 
 <template>
+  <h1 class="text-3xl font-bold underline">Hello world!</h1>
   <div class="root">
     <div class="roomList">
       <div class="flex" v-for="(room, index) of roomList" :key="index">
