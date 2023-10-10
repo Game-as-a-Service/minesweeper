@@ -58,6 +58,7 @@ onMounted(() => {
     }
     sendData("roomList", {});
   });
+
   socketStore.addEventListener("auth_fail", (data: any) => {
     console.log("auth_fail");
     userStore.logout();
@@ -67,12 +68,12 @@ onMounted(() => {
   });
 
   socketStore.addEventListener("roomList", (data: any) => {
+    clientCount.value = data.clientCount;
     roomList.value = data.roomList;
   });
 
   socketStore.addEventListener("gameInfo", (data: any) => {
     localStorage.setItem("gameId", data.gameId);
-    clientCount.value = data.clientCount;
     cells.value = data.cells;
     gameState.value = data.gameState;
   });
@@ -145,7 +146,7 @@ const flag = (item: Cell, event: MouseEvent) => {
 };
 
 const joinRoom = (gameId: string) => {
-  localStorage.setItem("gameId", gameId);
+  // localStorage.setItem("gameId", gameId);
   sendData("gameInfo", {});
 };
 </script>

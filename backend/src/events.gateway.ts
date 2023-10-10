@@ -161,7 +161,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return this.gameInfo(gameId);
   }
   roomListEvent() {
-    const data = { roomList: [] };
+    const data = {
+      clientCount: this.clientList.length,
+      roomList: [],
+    };
 
     const playingList = this.clientList.filter((c: MyWebSocket) => {
       return c.data.game.isPlaying;
@@ -282,7 +285,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const data = {
       gameId: gameId,
-      clientCount: this.clientList.length,
       gameState: game.gameState,
       cells: game.board.cells,
     };
