@@ -27,7 +27,7 @@ async function signup() {
     <h1>This is an signup page</h1>
     <input v-model="user.account" type="text" placeholder="account" />
     <input v-model="user.password" type="password" placeholder="password" />
-    <button @click="signup">註冊</button>
+    <button class="btn btn-blue" @click="signup">註冊</button>
     <div class="message">{{ message }}</div>
   </div>
 </template>

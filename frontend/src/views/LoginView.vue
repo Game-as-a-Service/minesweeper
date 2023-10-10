@@ -52,7 +52,7 @@ async function login() {
     <h1>This is an login page</h1>
     <input v-model="vm.user.account" type="text" placeholder="account" />
     <input v-model="vm.user.password" type="password" placeholder="password" />
-    <button @click="login">登入</button>
+    <button class="btn btn-blue" @click="login">登入</button>
     <div class="message">{{ vm.message }}</div>
   </div>
 </template>
