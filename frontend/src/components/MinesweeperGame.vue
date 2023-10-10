@@ -15,6 +15,7 @@ interface Room {
 }
 
 const route = useRoute();
+const userStore = useUserStore();
 const socketStore = useSocketStore();
 
 const gameId = route.params.gameId as string;
@@ -35,12 +36,21 @@ const level = ref(Level.BEGINNER);
 const clientCount = ref(0);
 const cells = ref<Cell[][]>([]);
 const gameState = ref<GameState>();
-const store = useUserStore();
 const roomList = ref<Room[]>([]);
 const nickName = ref("");
 
 onMounted(() => {
+  socketStore.addEventListener("login_waterball_ack", (data: any) => {
+    userStore.user.token = data.jwt;
+    nickName.value = data.nickname;
+    localStorage.setItem("token", userStore.user.token);
+    sendData("login", { token: userStore.user.token });
+  });
+
   socketStore.addEventListener("login_ack", (data: any) => {
+    if (nickName.value === "") {
+      nickName.value = userStore.user.account;
+    }
     if (localStorage.getItem("gameId")) {
       sendData("gameInfo", {});
     } else {
@@ -48,17 +58,9 @@ onMounted(() => {
     }
     sendData("roomList", {});
   });
-
-  socketStore.addEventListener("login_waterball_ack", (data: any) => {
-    store.user.token = data.jwt;
-    nickName.value = data.nickname;
-    localStorage.setItem("token", store.user.token);
-    sendData("login", { token: store.user.token });
-  });
-
   socketStore.addEventListener("auth_fail", (data: any) => {
     console.log("auth_fail");
-    store.logout();
+    userStore.logout();
     if (!wbToken) {
       router.push({ name: "login" });
     }
@@ -87,7 +89,7 @@ function login() {
   if (wbToken) {
     sendData("login_waterball", { token: wbToken });
   } else {
-    sendData("login", { token: store.user.token });
+    sendData("login", { token: userStore.user.token });
   }
 }
 
@@ -149,29 +151,32 @@ const joinRoom = (gameId: string) => {
 </script>
 
 <template>
-  <h1 class="text-3xl font-bold underline">Hello world!</h1>
-  <div class="root">
-    <div class="roomList">
+  <div class="flex justify-center">
+    <div>
+      <div>Hi: {{ nickName }}</div>
+      <div>Online: {{ clientCount }}</div>
+      <h1>線上玩家</h1>
       <div class="flex" v-for="(room, index) of roomList" :key="index">
-        <div @click="joinRoom(room.gameId)">{{ room.playerAccount }}</div>
+        <div class="btn btn-blue" @click="joinRoom(room.gameId)">
+          {{ room.playerAccount }}
+        </div>
       </div>
     </div>
-    <div class="box">
-      <div>Hi: {{ nickName }}</div>
-      <div class="center">Online: {{ clientCount }}</div>
+    <div class="flex flex-col ml-5">
+
       <div v-if="gameState?.winLose === WinLoseState.WIN">You Win</div>
       <div v-if="gameState?.winLose === WinLoseState.LOSE">You Lose</div>
-      <div>
-        <button @click="changeLevel(Level.BEGINNER)">Beginner</button>
-        <button @click="changeLevel(Level.INTERMEDIATE)">Intermediate</button>
-        <button @click="changeLevel(Level.EXPERT)">Expert</button>
-      </div>
+      <!--      <div>-->
+      <!--        <button class="btn btn-blue" @click="changeLevel(Level.BEGINNER)">Beginner</button>-->
+      <!--        <button class="btn btn-blue" @click="changeLevel(Level.INTERMEDIATE)">Intermediate</button>-->
+      <!--        <button class="btn btn-blue" @click="changeLevel(Level.EXPERT)">Expert</button>-->
+      <!--      </div>-->
       <div>Mines: {{ gameState?.displayMineCount }}</div>
-      <button @click="start()">Start</button>
-      <div class="box">
+      <button class="btn btn-blue" @click="start()">Start</button>
+      <div class="flex flex-col">
         <div class="flex" v-for="(row, index) in cells" :key="index">
           <div
-            class="cell"
+            class="h-[24px] w-[24px]"
             @click="click(item)"
             @contextmenu="flag(item, $event)"
             v-for="(item, index) in row"
@@ -193,6 +198,7 @@ const joinRoom = (gameId: string) => {
               <img v-if="item.number === 6" src="@/assets/minesweeper/6.png" />
               <img v-if="item.number === 7" src="@/assets/minesweeper/7.png" />
               <img v-if="item.number === 8" src="@/assets/minesweeper/8.png" />
+              <div v-if="item.number === 0"></div>
             </div>
           </div>
         </div>
@@ -201,31 +207,4 @@ const joinRoom = (gameId: string) => {
   </div>
 </template>
 
-<style>
-.root {
-  display: flex;
-  align-items: center;
-}
-.roomList {
-  margin-right: 50px;
-}
-.box {
-  display: flex;
-  flex-direction: column;
-}
-.flex {
-  display: flex;
-}
-.cell {
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  height: 24px;
-  width: 24px;
-}
-.center {
-  display: flex;
-  align-content: center;
-  justify-content: center;
-}
-</style>
+<style scoped></style>
