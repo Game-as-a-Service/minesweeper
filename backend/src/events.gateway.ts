@@ -160,13 +160,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     return this.gameInfo(gameId);
   }
-
-  @SubscribeMessage('roomList')
-  async onRoomList(client: MyWebSocket): Promise<WsResponse<object>> {
-    if (this.checkAuth(client) === false) {
-      return { event: 'error', data: {} };
-    }
-
+  roomListEvent() {
     const data = { roomList: [] };
 
     const playingList = this.clientList.filter((c: MyWebSocket) => {
@@ -181,6 +175,15 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     return { event: 'roomList', data };
+  }
+
+  @SubscribeMessage('roomList')
+  async onRoomList(client: MyWebSocket): Promise<WsResponse<object>> {
+    if (this.checkAuth(client) === false) {
+      return { event: 'error', data: {} };
+    }
+
+    return this.roomListEvent();
   }
 
   // client send: {"event":"board","data":"{ gameId: "xxx" }"}
@@ -286,16 +289,27 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const event = { event: 'gameInfo', data };
 
-    this.broadcast(gameId, event);
+    this.broadcastByGame(gameId, event);
     return event;
   }
 
-  broadcast(gameId: string, event) {
+  broadcast(event) {
+    for (const client of this.clientList) {
+      client.emit(event.event, event.data);
+    }
+  }
+
+  broadcastByGame(gameId: string, event) {
     const host = this.clientList.filter((c) => c.data.game.id === gameId);
 
     for (const client of host[0].data.game.viewerList) {
       client.emit(event.event, event.data);
     }
+  }
+
+  updateRoomList() {
+    const event = this.roomListEvent();
+    this.broadcast(event);
   }
 
   async joinRoom(gameId: string, client: MyWebSocket) {
@@ -310,6 +324,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.data.game.isViewer = true;
       client.data.game.watchUserId = host.data.user.id;
     }
+
+    this.updateRoomList();
   }
 
   private leaveRoom(client: MyWebSocket) {
@@ -330,5 +346,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.data.game.isViewer = false;
       client.data.game.watchUserId = -1;
     }
+
+    this.updateRoomList();
   }
 }
